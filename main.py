@@ -133,9 +133,9 @@ def train_classifier(nbr):
         mycursor.execute("UPDATE users SET completed_training = 1 WHERE id = %s", (user_id,))
         mydb.commit()
 
-        flash('Training completed successfully.', 'success')
+        flash('TRAINING SUCCESSFUL.', 'success')
     else:
-        flash('You can only train once.', 'warning')
+        flash('YOU CAN ONLY TRAIN ONCE.', 'danger')
 
     return redirect('/vfdataset_page')
 
