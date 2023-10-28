@@ -1,20 +1,28 @@
 {% include "header.html" %}
 <style>
     #confirmationModal {
-    display: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.7); /* Semi-transparent background for overlay effect */
     position: fixed;
-    top: 50%;
-    left: 50%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+
+  #confirmationModal .modal-content {
+    background: white; /* Background color of the modal content */
     padding: 20px;
-    max-width: 400px;
+    border-radius: 5px;
     text-align: center;
-    z-index: 5000; /* Adjust the z-index as needed */
-}
+    box-shadow: none; /* Remove box shadow */
+  }
 
-.modal-content {
-    text-align: center;
-}
-
+  #confirmationModal p {
+    margin: 0 0 20px;
+  }
 </style>
 <div class="content" style="background-color:white;">
                {% with messages = get_flashed_messages(with_categories=true) %}
@@ -39,9 +47,9 @@
         <div class="col-md-3-lg-2">
             {% if not user_completed_training %}
             <button onclick="$('#addfaceimg').attr('src','{{ url_for('vidfeed_dataset', nbr=prs) }}'); $('#addfaceimg').show(); $('#addfacestart').hide(); $('#addfacestop').show(); $('#training').show();" id="addfacestart" class="btn btn-warning btn-lg">Start</button>
-            <button onclick="$('#addfaceimg').attr('src',''); $('#addfaceimg').hide(); $('#addfacestart').show(); $('#addfacestop').hide();" style="display:none;" class="btn btn-warning btn-lg" id="addfacestop">Stop</button>
+            <button onclick="$('#addfaceimg').attr('src',''); $('#addfaceimg').hide(); $('#addfacestart').show(); $('#addfacestop').hide();" style="display:none;" class="btn btn-danger btn-lg" id="addfacestop">Stop</button>
 
-            <a class="btn btn-warning btn-lg" href="{{ url_for('train_classifier', nbr=prs) }}" id="training" style="display:none;"> Train Face</a>
+            <a class="btn btn-success btn-lg" href="{{ url_for('train_classifier', nbr=prs) }}" id="training" style="display:none;"> Train Face</a>
              {% else %}
               <p>You have already completed the process.</p>
             {% endif %}
@@ -68,7 +76,7 @@
 <!-- Modal Dialog -->
 <div id="confirmationModal" class="modal" style="display: none;">
     <div class="modal-content">
-        <p>By clicking the "Agree" button, you are expressly agreeing to our compliance with the Data Privacy Act of 2012. This act underscores our unwavering commitment to safeguarding the privacy and security of your personal information as it pertains to our Attendance Management System utilizing Facial Recognition. We adhere to stringent data protection measures, ensuring that your facial data is handled with the utmost care and in full compliance with the law. This agreement signifies your acknowledgment of our obligations and your trust in us to manage your data responsibly and securely.</p>
+        <p>By clicking the "<b>AGREE</b>" button, you are expressly agreeing to our compliance with the Data Privacy Act of 2012. This act underscores our unwavering commitment to safeguarding the privacy and security of your personal information as it pertains to our Attendance Management System utilizing Facial Recognition. We adhere to stringent data protection measures, ensuring that your facial data is handled with the utmost care and in full compliance with the law. This agreement signifies your acknowledgment of our obligations and your trust in us to manage your data responsibly and securely.</p>
         <button id="okButton" class="btn btn-primary">Agree</button>
         <button id="cancelButton" class="btn btn-secondary">Cancel</button>
     </div>
