@@ -6,11 +6,10 @@
     height:70px;
     width:70px;
     border:0.5px solid white;
-    box-shadow:1px 1px 3px 1px black ;
     }
     div .card{
     margin:auto;
-    max-width:1200px;
+    max-width:100%;
     }
 
 </style>
@@ -23,9 +22,9 @@
 </script>
 
  <div class="content">
-                <div class="container-fluid">
+                <div class="container">
                     <div class="row">
-                        <div class="col-md-12">
+                        <div class="md-12">
                             <div class="card">
                                 <div class="card-header card-header-icon" data-background-color="purple">
                                     <i class="material-icons">assignment</i>
@@ -42,13 +41,13 @@
                                             <thead>
                                                 <tr>
                                                     <th><input  type="checkbox" name="select-all" id="select-all" /></th>
-                                                    <th>Photo</th>
-                                                    <th>Fist Name</th>
-                                                    <th>Last Name</th>
-                                                    <th>Email</th>
-                                                    <th>Group</th>
-                                                    <th>Add Student</th>
-                                                    <th class="disabled-sorting text-right">Actions</th>
+                                                    <th><b>Photo</b></th>
+                                                    <th><b>Fist Name</b></th>
+                                                    <th><b>Last Name</b></th>
+                                                    <th><b>Email</b></th>
+                                                    <th><b>Courses</b></th>
+                                                    <th><b>Add Student</b></th>
+                                                    <th class="disabled-sorting text-right"><b>Actions</b></th>
                                                 </tr>
                                             </thead>
                                             <tfoot>
@@ -58,7 +57,7 @@
                                                     <th>Fist Name</th>
                                                     <th>Last Name</th>
                                                     <th>Email</th>
-                                                    <th>Group</th>
+                                                    <th>Courses</th>
                                                     <th>Add Student</th>
                                                     <th class="text-right">Actions</th>
                                                 </tr>
@@ -166,7 +165,7 @@ $("select[name='sn{{ item[1] }}'] > option").each(function () {
             responsive: true,
             language: {
                 search: "_INPUT_",
-                searchPlaceholder: "Search records",
+                searchPlaceholder: "Search Student",
             }
 
         });
