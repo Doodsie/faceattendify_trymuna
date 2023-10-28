@@ -548,7 +548,7 @@ def signup_submit():
            elif not re.match(r'[A-Za-z0-9]+', first_name):
               msg = 'Username must contain only characters and numbers !'
            elif not re.match(password_pattern, password):
-               msg = 'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one special character (@, #, $, %, ^, &, +, =, !).'
+              msg = 'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one special character (@, #, $, %, ^, &, +, =, !).'
            elif not first_name or not password or not email:
               msg = 'Please fill out the form !'
            else:

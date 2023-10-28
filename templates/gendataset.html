@@ -16,12 +16,13 @@
 .modal-content {
     text-align: center;
 }
+
 </style>
 <div class="content" style="background-color:white;">
                 <div class="container-fluid">
 <section class="py-1">
 
-      <div class="row">
+      <div class="row mx-auto text-center">
         <div class="col-md-3 offset-lg-2">
             {% if not user_completed_training %}
             <button onclick="$('#addfaceimg').attr('src','{{ url_for('vidfeed_dataset', nbr=prs) }}'); $('#addfaceimg').show(); $('#addfacestart').hide(); $('#addfacestop').show(); $('#training').show();" id="addfacestart" class="btn btn-warning btn-lg">Start</button>
@@ -35,7 +36,7 @@
         </div>
     </div>
     <div class="row mt-5">
-        <div class="col-md-3 offset-lg-2">
+        <div class="col-md-3 offset-lg-2 mx-auto text-center">
             <!--h3>Generate Dataset {{ prs }}</h3-->
             <h3>Generate New Dataset</h3>
             <hr>
