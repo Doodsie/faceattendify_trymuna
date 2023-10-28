@@ -8,14 +8,14 @@
                                     <i class="material-icons">assignment</i>
                                 </div>
                                 <div class="card-content">
-                                    <h4 class="card-title">Create new group</h4>
+                                    <h4 class="card-title"><b>Create new Channel</b></h4>
                                     <form role="form" action="/groups" method="post">
                                         <div class="form-group label-floating">
-                                            <label class="control-label">Group Name</label>
+                                            <label class="control-label">Course Name</label>
                                             <input type="text" class="form-control" name="group_name" required>
                                         </div>
 
-                                        <button type="submit" class="btn btn-fill btn-rose">Create Group</button>
+                                        <button type="submit" class="btn btn-fill btn-rose">Create Course</button>
                                     </form>
                                 </div>
 
@@ -31,7 +31,7 @@
                                     <i class="material-icons">mail_outline</i>
                                 </div>
                                 <div class="card-content">
-                                    <h4 class="card-title">Group lists</h4>
+                                    <h4 class="card-title"><b>Course Channels</b></h4>
                                     <div class="toolbar">
                                         <!--        Here you can write extra buttons/actions for the toolbar              -->
                                     </div>
@@ -39,16 +39,16 @@
                                         <table id="datatables" class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%; text-transform:capitalize;">
                                             <thead>
                                                 <tr>
-                                                    <th>Group Name</th>
-                                                    <th>Date</th>
-                                                    <th class="disabled-sorting text-right">Actions</th>
+                                                    <th><b>Courses</b></th>
+                                                    <th><b>Date and time created</b></th>
+                                                    <th class="disabled-sorting text-right"><b>Actions</b></th>
                                                 </tr>
                                             </thead>
                                             <tfoot>
                                                 <tr>
-                                                    <th>Group Name</th>
-                                                    <th>Date</th>
-                                                    <th class="text-right">Actions</th>
+                                                    <th><b>Courses</b></th>
+                                                    <th><b>Date and time created</b></th>
+                                                    <th class="text-right"><b>Actions</b></th>
                                                 </tr>
                                             </tfoot>
                                             <tbody>
@@ -121,6 +121,6 @@
 
 	$('.header_nav').removeClass('active');
 	$('.groups').addClass('active');
-	$('#header_page_title').html('Groups');
+	$('#header_page_title').html('Course Channel');
 </script>
 
