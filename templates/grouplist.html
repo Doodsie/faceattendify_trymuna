@@ -8,23 +8,23 @@
                                     <i class="material-icons">assignment</i>
                                 </div>
                                 <div class="card-content">
-                                    <h4 class="card-title">Groups</h4>
+                                    <h4 class="card-title">Courses</h4>
                                     <div class="toolbar">
                                     </div>
                                     <div class="material-datatables">
                                         <table id="datatables" class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%; text-transform:capitalize;">
                                             <thead>
                                                 <tr>
-                                                    <th>Group Name</th>
+                                                    <th>Course Name</th>
                                                     <th>Teacher</th>
-													<th>Student</th>
+													<th>Students</th>
                                                 </tr>
                                             </thead>
                                             <tfoot>
                                                 <tr>
-                                                    <th>Group Name</th>
+                                                    <th>Course Name</th>
                                                     <th>Teacher</th>
-													<th>Student</th>
+													<th>Students</th>
                                                 </tr>
                                             </tfoot>
                                             <tbody>
@@ -52,7 +52,7 @@
                                     <i class="material-icons">mail_outline</i>
                                 </div>
                                 <div class="card-content">
-                                    <h4 class="card-title" style="text-transform:capitalize;"><b>Group :</b> {{ groupname }},&nbsp; <b> Teacher :</b> {{ groupteacher }} </h4>
+                                    <h4 class="card-title" style="text-transform:capitalize;"><b>Course :</b> {{ groupname }} &nbsp; <b> Teacher :</b> {{ groupteacher }} </h4>
 
                                         <div class="form-group label-floating">
                                              <div class="material-datatables">
@@ -139,7 +139,7 @@
 
 	$('.header_nav').removeClass('active');
 	$('.grouplist').addClass('active');
-	$('#header_page_title').html('Groups');
+	$('#header_page_title').html('Courses');
 
 
 
