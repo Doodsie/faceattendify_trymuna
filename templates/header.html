@@ -45,22 +45,8 @@
 <script>location.href='/login';</script>
 {% endif %}
 
-<body >
+<body>
 
-{% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        <div class="alert-messages"  >
-            {% for category, message in messages %}
-                <div class="alert alert-success alert-{{ category }}" role="alert">
-                    {{ message }}
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
-{% endwith %}
 
         <div class="sidebar" data-active-color="purple" data-background-color="black" data-image="{{ url_for('static', filename='assets/img/sidebar-1.jpg') }}">
             <!--
@@ -76,7 +62,6 @@
                      {{session.user_role}}
                 </a>
             </div>
-
             <div class="sidebar-wrapper"  style="font-size:18px;">
                 <!-- START USER PROFILE AT NAME -->
                 <div class="user" id="userProfile">

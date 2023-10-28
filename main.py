@@ -137,7 +137,7 @@ def train_classifier(nbr):
     else:
         flash('You can only train once.', 'warning')
 
-    return redirect('/updateownprofile')
+    return redirect('/vfdataset_page')
 
 @app.route('/gendataset')
 def gendataset():

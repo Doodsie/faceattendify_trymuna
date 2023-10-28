@@ -5,12 +5,10 @@
     position: fixed;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: white;
     padding: 20px;
     max-width: 400px;
     text-align: center;
-    z-index: 1000; /* Adjust the z-index as needed */
+    z-index: 5000; /* Adjust the z-index as needed */
 }
 
 .modal-content {
@@ -19,6 +17,21 @@
 
 </style>
 <div class="content" style="background-color:white;">
+               {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="alert-messages">
+            {% for category, message in messages %}
+                <div class="alert alert-success alert-{{ category }}" role="alert" style="text-align:center;">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endwith %}
+
                 <div class="container-fluid">
 <section class="py-1">
 
