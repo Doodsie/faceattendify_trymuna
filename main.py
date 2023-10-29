@@ -516,7 +516,7 @@ def login_submit():
                 #return render_template('updateownprofile.html', msg=msg)
                 return redirect(url_for('updateownprofile'))
         else:
-            msg = """Your email or password is incorrect"""
+            flash('Email or password Incorrect', 'danger')
     return render_template('login.html', msg=msg)
 
 @app.route('/signup')
@@ -1119,11 +1119,18 @@ def edit_user(user_id):
         elif not first_name or not last_name or not email or not user_role:
             flash('All fields are required.', 'danger')
         else:
-            mycursor.execute(
-                "UPDATE users SET first_name = %s, last_name = %s, email = %s, user_role = %s, password = %s WHERE id = %s",
-                (first_name, last_name, email, user_role, password, user_id))
-            mydb.commit()
-            flash('User updated successfully.', 'success')
+            if password:  # Only update the password if it's not empty
+                mycursor.execute(
+                    "UPDATE users SET first_name = %s, last_name = %s, email = %s, user_role = %s, password = %s WHERE id = %s",
+                    (first_name, last_name, email, user_role, password, user_id))
+                mydb.commit()
+                flash('User updated successfully.', 'success')
+            else:
+                mycursor.execute(
+                    "UPDATE users SET first_name = %s, last_name = %s, email = %s, user_role = %s WHERE id = %s",
+                    (first_name, last_name, email, user_role, user_id))
+                mydb.commit()
+                flash('User updated successfully.', 'success')
             return redirect(url_for('users'))
 
     return render_template('edit_user.html', user=user)
