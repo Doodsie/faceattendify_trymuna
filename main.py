@@ -542,26 +542,26 @@ def signup_submit():
            mycursor.execute("SELECT * FROM users WHERE email = '%s'" % (email))
            account = mycursor.fetchone()
            if account:
-              msg = 'Email already exists !'
+               flash('Email already exists !', 'danger')
            elif not re.match(r'[^@]+@[^@]+\.[^@]+', email):
-              msg = 'Invalid email address !'
+               flash('Invalid Email Address', 'danger')
            elif not re.match(r'[A-Za-z0-9]+', first_name):
-              msg = 'Username must contain only characters and numbers !'
+               flash('Username must contain only characters and numbers !', 'danger')
            elif not re.match(password_pattern, password):
-              msg = 'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one special character (@, #, $, %, ^, &, +, =, !).'
+               flash('Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one special character (@, #, $, %, ^, &, +, =, !).', 'danger')
            elif not first_name or not password or not email:
-              msg = 'Please fill out the form !'
+               flash('Please Fill out the form', 'danger')
            else:
               mycursor.execute("insert into users ( first_name, last_name, email, password, user_role, phone) values('" + str(
                   first_name) + "', '" + str(last_name) + "', '" + str(email) + "', '" + str(password) + "', '" + str(user_role) + "', '" + str(phone) + "')")
               mydb.commit()
 
-              msg = 'You have successfully registered !'
+              flash('You have successfully registered', 'success')
               return add_login_view()
         else:
-           msg = ' Your password and re-entered password is not matching.'
+            flash('Your password and re-entered password is not matching.', 'danger')
     elif request.method == 'POST':
-        msg = 'Please fill out the form !'
+        flash('Please fill out the form', 'danger')
     return render_template('signup.html', msg=msg)
 
 @app.route('/updateownprofile')
@@ -828,29 +828,30 @@ def teachersignup_submit():
         phone = ""
         password_pattern = r'^(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&+=!]).{8,}$'
 
+
         if password == re_password:
            mycursor.execute("SELECT * FROM users WHERE email = '%s'" % (email))
            account = mycursor.fetchone()
            if account:
-              msg = 'Account already exists !'
+               flash('Email already exists !', 'danger')
            elif not re.match(r'[^@]+@[^@]+\.[^@]+', email):
-              msg = 'Invalid email address !'
+               flash('Invalid email address !', 'danger')
            elif not re.match(r'[A-Za-z0-9]+', first_name):
-              msg = 'Username must contain only characters and numbers !'
+               flash('Username must contain only characters and numbers !', 'danger')
            elif not re.match(password_pattern, password):
-               msg = 'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one special character (@, #, $, %, ^, &, +, =, !).'
+               flash('Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one special character (@, #, $, %, ^, &, +, =, !).', 'danger')
            elif not first_name or not password or not email:
-              msg = 'Please fill out the form !'
+               flash('Please fill out the form !', 'danger')
            else:
               mycursor.execute("insert into users ( first_name, last_name, email, password, user_role, phone) values('" + str(
                   first_name) + "', '" + str(last_name) + "', '" + str(email) + "', '" + str(password) + "', '" + str(user_role) + "', '" + str(phone) + "')")
               mydb.commit()
-              msg = 'You have successfully registered !'
+              flash('You have successfully registered !', 'success')
               return add_login_view()
         else:
-           msg = ' Your password and re-entered password is not matching.'
+            flash('Your password and re-entered password is not matching.', 'danger')
     elif request.method == 'POST':
-        msg = 'Please fill out the form !'
+        flash('Please fill out the form !', 'danger')
     return render_template('teachersignup.html', msg=msg)
 
 
@@ -1069,15 +1070,18 @@ def add_user():
         email = request.form['email']
         user_role = request.form['user_role']
         password = request.form['password']
+        password_pattern = r'^(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&+=!]).{8,}$'
 
         # Check if the email is already used by another user
         mycursor.execute("SELECT id FROM users WHERE email = %s", (email,))
         existing_user = mycursor.fetchone()
 
         if existing_user:
-            flash('Email already in use by another user.', 'error')
+            flash('Email already in use by another user.', 'danger')
         elif not first_name or not last_name or not email or not user_role:
-            flash('All fields are required.', 'error')
+            flash('All fields are required.', 'danger')
+        elif not re.match(password_pattern, password):
+            flash('Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one special character (@, #, $, %, ^, &, +, =, !).', 'danger')
         else:
             mycursor.execute(
                 "INSERT INTO users (first_name, last_name, email, user_role, password) VALUES (%s, %s, %s, %s, %s)",
@@ -1096,7 +1100,7 @@ def edit_user(user_id):
     user = mycursor.fetchone()
 
     if not user:
-        flash('User not found.', 'error')
+        flash('User not found.', 'danger')
         return redirect(url_for('users'))
 
     if request.method == 'POST':
@@ -1111,9 +1115,9 @@ def edit_user(user_id):
         existing_user = mycursor.fetchone()
 
         if existing_user:
-            flash('Email already in use by another user.', 'error')
+            flash('Email already in use by another user.', 'danger')
         elif not first_name or not last_name or not email or not user_role:
-            flash('All fields are required.', 'error')
+            flash('All fields are required.', 'danger')
         else:
             mycursor.execute(
                 "UPDATE users SET first_name = %s, last_name = %s, email = %s, user_role = %s, password = %s WHERE id = %s",
