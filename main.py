@@ -9,7 +9,7 @@ import os
 import time
 from datetime import date, datetime
 import re
-python railway_app.py
+
 
 cv2.setUseOptimized(True)
 cv2.ocl.setUseOpenCL(False)
