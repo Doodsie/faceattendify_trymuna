@@ -14,4 +14,3 @@ packaging==23.2
 Pillow==10.0.0
 Werkzeug==3.0.0
 opencv-python-headless==4.5.3.56
-pip==23.3.1
