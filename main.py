@@ -13,6 +13,7 @@ import re
 
 
 cv2.setUseOptimized(True)
+cv2.setNumThreads(0)
 cv2.ocl.setUseOpenCL(False)
 
 
