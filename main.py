@@ -3,14 +3,15 @@ import json
 from flask import Flask, render_template, request, session, redirect, url_for, Response, jsonify, flash
 import mysql.connector
 import cv2
-cv2.setUseOptimized(True)
-cv2.ocl.setUseOpenCL(False)
 from PIL import Image
 import numpy as np
 import os
 import time
 from datetime import date, datetime
 import re
+
+cv2.setUseOptimized(True)
+cv2.ocl.setUseOpenCL(False)
 
 
 app = Flask(__name__)
