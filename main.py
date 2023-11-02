@@ -10,6 +10,39 @@ import time
 from datetime import date, datetime
 import re
 
+from flask import Flask
+
+app = Flask(__name__)
+
+# Define a basic route that responds to the root URL '/'
+@app.route('/')
+def index():
+    return 'Welcome to the Railway App'
+
+# Define a route with a dynamic URL parameter
+@app.route('/trains/<train_id>')
+def view_train(train_id):
+    return f'Viewing information for train {train_id}'
+
+# Define a route that handles HTTP POST requests
+@app.route('/create-train', methods=['POST'])
+def create_train():
+    # Handle the POST request here
+    return 'Train created successfully'
+
+# Define a route that handles both GET and POST requests
+@app.route('/update-train/<train_id>', methods=['GET', 'POST'])
+def update_train(train_id):
+    if request.method == 'POST':
+        # Handle the POST request to update the train
+        return f'Train {train_id} updated successfully'
+    else:
+        # Handle the GET request to view the update form
+        return f'Edit form for train {train_id}'
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
 
 
 cv2.setUseOptimized(True)
