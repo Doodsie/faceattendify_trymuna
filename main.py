@@ -3,6 +3,8 @@ import json
 from flask import Flask, render_template, request, session, redirect, url_for, Response, jsonify, flash
 import mysql.connector
 import cv2
+cv2.setUseOptimized(True)
+cv2.ocl.setUseOpenCL(False)
 from PIL import Image
 import numpy as np
 import os
