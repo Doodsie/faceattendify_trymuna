@@ -9,6 +9,7 @@ import os
 import time
 from datetime import date, datetime
 import re
+pip install opencv-python
 
 
 cv2.setUseOptimized(True)
