@@ -2,8 +2,6 @@ import json
 
 from flask import Flask, render_template, request, session, redirect, url_for, Response, jsonify, flash
 import mysql.connector
-import os
-os.environ["MY_ENV_VARIABLE"] = True
 import cv2
 from PIL import Image
 import numpy as np
