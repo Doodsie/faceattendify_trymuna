@@ -15,3 +15,4 @@ Pillow==10.0.0
 Werkzeug==3.0.0
 opencv-python-headless==4.5.3.56
 pip==21.2.4
+openspacetrainenv==0.0.15
