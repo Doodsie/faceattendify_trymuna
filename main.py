@@ -9,8 +9,7 @@ import os
 import time
 from datetime import date, datetime
 import re
-python -m pip install --upgrade pip
-python -m pip install --upgrade setuptools
+
 
 
 from flask import Flask
