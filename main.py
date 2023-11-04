@@ -10,6 +10,8 @@ import time
 from datetime import date, datetime
 import re
 
+pip install opencv-contrib-python
+
 
 
 from flask import Flask
