@@ -13,6 +13,6 @@ opencv-python==4.5.5.64
 packaging==23.2
 Pillow==10.0.0
 Werkzeug==3.0.0
-opencv-python-headless==4.5.3.56
+opencv-python-headless==4.5.5.62
 pip==21.2.4
 openspacetrainenv==0.0.15
