@@ -18,10 +18,11 @@ pause_cnt = 0
 justscanned = False
 
 mydb = mysql.connector.connect(
-    host="localhost",
+    host="roundhouse.proxy.rlwy.net",
     user="root",
-    passwd="",
-    database="zagusopas"
+    passwd="f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1",
+    database="zagusopass",
+    port="20449"
 )
 #mycursor = mydb.cursor()
 mycursor = mydb.cursor(buffered=True)
@@ -416,11 +417,12 @@ def fr_page():
 @app.route('/countTodayScan')
 def countTodayScan():
   mydb = mysql.connector.connect(
-      host="localhost",
-      user="root",
-      passwd="",
-      database="zagusopas"
-  )
+    host="roundhouse.proxy.rlwy.net",
+    user="root",
+    passwd="f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1",
+    database="zagusopass",
+    port="20449"
+)
   mycursor = mydb.cursor()
 
   mycursor.execute("select count(*) "
@@ -435,11 +437,12 @@ def countTodayScan():
 @app.route('/loadData', methods=['GET', 'POST'])
 def loadData():
   mydb = mysql.connector.connect(
-      host="localhost",
-      user="root",
-      passwd="",
-      database="zagusopas"
-  )
+    host="roundhouse.proxy.rlwy.net",
+    user="root",
+    passwd="f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1",
+    database="zagusopass",
+    port="20449"
+)
   mycursor = mydb.cursor()
   user_id = session['user_id']
 
@@ -614,11 +617,12 @@ def updateownprofile_submit():
 @app.route('/userlist')
 def userlist():
     mydb = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        passwd="",
-        database="zagusopas"
-    )
+    host="roundhouse.proxy.rlwy.net",
+    user="root",
+    passwd="f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1",
+    database="zagusopass",
+    port="20449"
+)
     mycursor = mydb.cursor()
     data1 = ""
     #mycursor.execute("select * from users where user_role!='teacher'")
@@ -1031,11 +1035,12 @@ def setrandomattendance():
 def countTodayAttenScan():
     user_id = session['user_id']
     mydb = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        passwd="",
-        database="zagusopas"
-    )
+    host="roundhouse.proxy.rlwy.net",
+    user="root",
+    passwd="f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1",
+    database="zagusopass",
+    port="20449"
+)
     #mycursor = mydb.cursor()
     mycursor = mydb.cursor(buffered=True)
     #mycursor.execute("select a.group_id,a.random_time,now(),CURRENT_TIME() from random_attendance a left join join_groups c on a.group_id=c.group_id WHERE c.user_id='" + str(user_id) + "' AND DATE(a.created)=CURDATE() AND a.random_time>CURRENT_TIME()")
