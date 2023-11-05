@@ -460,24 +460,24 @@ def loadData():
     mycursor = mydb.cursor()
 
 
-user_id = session['user_id']
+    user_id = session['user_id']
 
-mycursor.execute("select a.accs_id, a.accs_prsn, b.first_name, b.last_name, date_format(a.accs_added, '%H:%i:%s') "
-"  from accs_hist a "
-"  left join users b on a.accs_prsn = b.id "
-" where a.accs_date = curdate() and b.id = " + str(user_id) +
-" order by 1 desc")
+    mycursor.execute("select a.accs_id, a.accs_prsn, b.first_name, b.last_name, date_format(a.accs_added, '%H:%i:%s') "
+    "  from accs_hist a "
+    "  left join users b on a.accs_prsn = b.id "
+    " where a.accs_date = curdate() and b.id = " + str(user_id) +
+    " order by 1 desc")
 
-'''
-  mycursor.execute("select a.accs_id, a.accs_prsn, b.first_name, b.last_name, date_format(a.accs_added, '%H:%i:%s') "
-                   "  from accs_hist a "
-                   "  left join users b on a.accs_prsn = b.id "
-                   " where a.accs_date = curdate() "
-                   " order by 1 desc")
-'''
-data = mycursor.fetchall()
+    '''
+      mycursor.execute("select a.accs_id, a.accs_prsn, b.first_name, b.last_name, date_format(a.accs_added, '%H:%i:%s') "
+                       "  from accs_hist a "
+                       "  left join users b on a.accs_prsn = b.id "
+                       " where a.accs_date = curdate() "
+                       " order by 1 desc")
+    '''
+    data = mycursor.fetchall()
 
-return jsonify(response=data)
+    return jsonify(response=data)
 
 
 @app.route('/')
