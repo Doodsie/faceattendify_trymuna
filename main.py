@@ -18,13 +18,12 @@ pause_cnt = 0
 justscanned = False
 
 mydb = mysql.connector.connect(
-    host="roundhouse.proxy.rlwy.net",
-    user="root",
-    passwd="f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1",
-    database="zagusopass"
-  
+    host=os.getenv("roundhouse.proxy.rlwy.net"),
+    port=os.getenv("20449"),
+    user=os.getenv("root"),  
+    passwd=os.getenv("f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1"), 
+    database=os.getenv("zagusopass")  
 )
-#mycursor = mydb.cursor()
 mycursor = mydb.cursor(buffered=True)
 
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Generate dataset >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -416,12 +415,11 @@ def fr_page():
 
 @app.route('/countTodayScan')
 def countTodayScan():
-  mydb = mysql.connector.connect(
-    host="roundhouse.proxy.rlwy.net",
-    user="root",
-    passwd="f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1",
-    database="zagusopass"
-   
+  host=os.getenv("roundhouse.proxy.rlwy.net"),
+    port=os.getenv("20449"),
+    user=os.getenv("root"),  
+    passwd=os.getenv("f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1"), 
+    database=os.getenv("zagusopass")  
 )
   mycursor = mydb.cursor()
 
@@ -436,12 +434,11 @@ def countTodayScan():
 
 @app.route('/loadData', methods=['GET', 'POST'])
 def loadData():
-  mydb = mysql.connector.connect(
-    host="roundhouse.proxy.rlwy.net",
-    user="root",
-    passwd="f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1",
-    database="zagusopass"
-   
+  host=os.getenv("roundhouse.proxy.rlwy.net"),
+    port=os.getenv("20449"),
+    user=os.getenv("root"),  
+    passwd=os.getenv("f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1"), 
+    database=os.getenv("zagusopass")  
 )
   mycursor = mydb.cursor()
   user_id = session['user_id']
@@ -617,11 +614,11 @@ def updateownprofile_submit():
 @app.route('/userlist')
 def userlist():
     mydb = mysql.connector.connect(
-    host="roundhouse.proxy.rlwy.net",
-    user="root",
-    passwd="f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1",
-    database="zagusopass"
-   
+    host=os.getenv("roundhouse.proxy.rlwy.net"),
+    port=os.getenv("20449"),
+    user=os.getenv("root"),  
+    passwd=os.getenv("f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1"), 
+    database=os.getenv("zagusopass")  
 )
     mycursor = mydb.cursor()
     data1 = ""
@@ -1035,11 +1032,11 @@ def setrandomattendance():
 def countTodayAttenScan():
     user_id = session['user_id']
     mydb = mysql.connector.connect(
-    host="roundhouse.proxy.rlwy.net",
-    user="root",
-    passwd="f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1",
-    database="zagusopass"
-   
+    host=os.getenv("roundhouse.proxy.rlwy.net"),
+    port=os.getenv("20449"),
+    user=os.getenv("root"),  
+    passwd=os.getenv("f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1"), 
+    database=os.getenv("zagusopass")  
 )
     #mycursor = mydb.cursor()
     mycursor = mydb.cursor(buffered=True)
