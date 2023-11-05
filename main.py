@@ -22,7 +22,7 @@ mydb = mysql.connector.connect(
     user="root",
     passwd="f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1",
     database="zagusopass",
-    port="20449"
+  
 )
 #mycursor = mydb.cursor()
 mycursor = mydb.cursor(buffered=True)
@@ -421,7 +421,7 @@ def countTodayScan():
     user="root",
     passwd="f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1",
     database="zagusopass",
-    port="20449"
+   
 )
   mycursor = mydb.cursor()
 
@@ -441,7 +441,7 @@ def loadData():
     user="root",
     passwd="f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1",
     database="zagusopass",
-    port="20449"
+   
 )
   mycursor = mydb.cursor()
   user_id = session['user_id']
@@ -621,7 +621,7 @@ def userlist():
     user="root",
     passwd="f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1",
     database="zagusopass",
-    port="20449"
+   
 )
     mycursor = mydb.cursor()
     data1 = ""
@@ -1039,7 +1039,7 @@ def countTodayAttenScan():
     user="root",
     passwd="f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1",
     database="zagusopass",
-    port="20449"
+   
 )
     #mycursor = mydb.cursor()
     mycursor = mydb.cursor(buffered=True)
