@@ -131,7 +131,7 @@
                                          <h4 class="card-title"></h4>
 
                                         <input type="button" name="reject" value="Reject" class='btn btn-fill btn-orange pull-left' onclick="$('.modal').css('visibility', 'hidden');">
-                                        <a href='/fr_page' id="manuala"><input type='button' class='btn btn-next btn-fill btn-rose btn-wd pull-right' onclick="$('.modal').css('visibility', 'hidden');" name='Mark attendance' value='Mark attendance' /></a>
+                                        <a id="manuala"><input type='button' class='btn btn-next btn-fill btn-rose btn-wd pull-right' onclick="$('.modal').css('visibility', 'hidden'), openWin();" name='Mark attendance' value='Mark attendance' /></a>
 
                                 </div>
                                 <!-- end content-->
@@ -224,6 +224,13 @@ $(document).ready(function() {
             // Show the modal here
             $('#myattenModal').show();
             $('#myattenModal').css('visibility', 'visible');
+
+             const modalDuration = {{ session.attendanceduration }}  * 60 * 1000; // Duration in milliseconds
+                        setTimeout(function() {
+                            // Close the modal after the duration
+                            $('#myattenModal').hide();
+                            $('#myattenModal').css('visibility', 'hidden');
+                        }, modalDuration);
           }
           lastcnt1 = cnt1;
         },
@@ -242,6 +249,13 @@ $(document).ready(function() {
 
   {% endif %}
 });
+let myWindow;
+function openWin() {
+  myWindow = window.open('/fr_page', 'myWindow', 'width=600,height=700');
+}
 
+function closeWin() {
+  myWindow.close();
+}
 </script>
 

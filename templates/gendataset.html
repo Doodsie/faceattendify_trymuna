@@ -45,15 +45,11 @@
 
       <div class="row mx-auto text-center">
         <div class="col-md-3-lg-2">
-            {% if not user_completed_training %}
+            {% if not user_completed_process %}
             <button onclick="$('#addfaceimg').attr('src','{{ url_for('vidfeed_dataset', nbr=prs) }}'); $('#addfaceimg').show(); $('#addfacestart').hide(); $('#addfacestop').show(); $('#training').show();" id="addfacestart" class="btn btn-warning btn-lg">Start</button>
             <button onclick="$('#addfaceimg').attr('src',''); $('#addfaceimg').hide(); $('#addfacestart').show(); $('#addfacestop').hide();" style="display:none;" class="btn btn-danger btn-lg" id="addfacestop">Stop</button>
 
             <a class="btn btn-success btn-lg" href="{{ url_for('train_classifier', nbr=prs) }}" id="training" style="display:none;"> Train Face</a>
-             {% else %}
-              <p>You have already completed the process.</p>
-            {% endif %}
-            <p><b>You can only train your face ONCE.</b></p>
 
         </div>
     </div>
@@ -68,6 +64,11 @@
             <h4>Please ensure that you train your face in a good lighting condition.</h4>
         </div>
     </div>
+            {% else %}
+              <h1>You can only Train your face ONCE.</h1>
+              <h3>Please end a Request to an Admin. Thank you!</h3>
+            {% endif %}
+
 </section>
 
                 </div>

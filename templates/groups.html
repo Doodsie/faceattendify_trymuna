@@ -33,7 +33,6 @@
                                 <div class="card-content">
                                     <h4 class="card-title"><b>Course Channels</b></h4>
                                     <div class="toolbar">
-                                        <!--        Here you can write extra buttons/actions for the toolbar              -->
                                     </div>
                                     <div class="material-datatables">
                                         <table id="datatables" class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%; text-transform:capitalize;">
@@ -52,19 +51,18 @@
                                                 </tr>
                                             </tfoot>
                                             <tbody>
-												{% for item in data %}
-                                                <tr>
-                                                    <td><a href='/agrouplist?group_id={{ item[0] }}&action=view_members&groupteacher={{session.user_name}}&groupname={{ item[1] }}'>{{ item[1] }}</a></td>
-                                                    <td>{{ item[2] }}</td>
-                                                    <td class="text-right">
-                                                        <!--a href="#" class="btn btn-simple btn-info btn-icon like"><i class="material-icons">favorite</i></a-->
-                                                        <!--a href="groups.php?id=<?php echo $row['id'];?>" class="btn btn-simple btn-warning btn-icon edit"><i class="material-icons">dvr</i></a-->
-                                                        <!--a href="#" class="btn btn-simple btn-danger btn-icon remove"><i class="material-icons">close</i></a-->
-														<a href='delete?id={{ item[0] }}&tname=groups&rurl=groups' onclick="return confirm('Are you sure you want to remove this group?')" class="btn btn-simple btn-danger btn-icon remove1"><i class="material-icons">close</i>Delete</a>
-                                                    </td>
-                                                </tr>
-												{% endfor %}
-                                            </tbody>
+    {% for item in data %}
+    <tr>
+        <td><a class="btn btn-primary btn-lg" href='/agrouplist?group_id={{ item[0] }}&action=view_members&groupteacher={{ session.user_name }}&groupname={{ item[1] }}'>{{ item[1] }}</a></td>
+        <td>{{ item[2] }}</td>
+        <td class="text-right">
+            <button class="btn btn-warning btn-sm rename-button" data-group-id="{{ item[0] }}" data-group-name="{{ item[1] }}">Rename  <i class="material-icons">create</i>  </button>
+            <a class="btn btn-danger btn-sm" href='delete?id={{ item[0] }}&tname=groups&rurl=groups' onclick="return confirm('Are you sure you want to remove this group?')">Delete  <i class="material-icons">close</i></a>
+
+        </td>
+    </tr>
+    {% endfor %}
+</tbody>
                                         </table>
                                     </div>
                                 </div>
@@ -122,5 +120,28 @@
 	$('.header_nav').removeClass('active');
 	$('.groups').addClass('active');
 	$('#header_page_title').html('Course Channel');
+
+      $(document).ready(function () {
+        // Handle the "Rename" button click
+        $(".rename-button").click(function () {
+            const groupId = $(this).data("group-id");
+            const currentName = $(this).data("group-name");
+
+            // Prompt the user to enter a new name
+            const newName = prompt("Rename the group:", currentName);
+
+            if (newName) {
+                // Update the group name in the table
+                $(this).data("group-name", newName);
+                $(this).closest("tr").find("a.btn-primary").text(newName);
+
+                // Send an AJAX request to update the group name in the backend
+                $.post("/groups", {
+                    group_id: groupId,
+                    new_group_name: newName
+                });
+            }
+        });
+    });
 </script>
 

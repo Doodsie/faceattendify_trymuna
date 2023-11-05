@@ -12,59 +12,11 @@ import re
 
 
 
-
-from flask import Flask
-
-app = Flask(__name__)
-
-# Define a basic route that responds to the root URL '/'
-@app.route('/')
-def index():
-    return 'Welcome to the Railway App'
-
-# Define a route with a dynamic URL parameter
-@app.route('/trains/<train_id>')
-def view_train(train_id):
-    return f'Viewing information for train {train_id}'
-
-# Define a route that handles HTTP POST requests
-@app.route('/create-train', methods=['POST'])
-def create_train():
-    # Handle the POST request here
-    return 'Train created successfully'
-
-# Define a route that handles both GET and POST requests
-@app.route('/update-train/<train_id>', methods=['GET', 'POST'])
-def update_train(train_id):
-    if request.method == 'POST':
-        # Handle the POST request to update the train
-        return f'Train {train_id} updated successfully'
-    else:
-        # Handle the GET request to view the update form
-        return f'Edit form for train {train_id}'
-
-if __name__ == '__main__':
-    app.run(debug=True)
-
-
-
-cv2.setUseOptimized(True)
-cv2.setNumThreads(0)
-cv2.ocl.setUseOpenCL(False)
-
-
 app = Flask(__name__)
 app.secret_key = 'your secret key'
-
 cnt = 0
 pause_cnt = 0
 justscanned = False
-
-#user = "iqmlhvyyatv7qono"
-#password = "jj36lbg9mfaucuee"
-#host = "dcrhg4kh56j13bnu.cbetxkdyhwsb.us-east-1.rds.amazonaws.com"
-#port = 3306
-#database = "vd2o5djn3ce6mnds"
 
 mydb = mysql.connector.connect(
     host="localhost",
@@ -83,7 +35,6 @@ def generate_dataset(nbr):
     data1 = mycursor.fetchall()
     for item in data1:
         imagePath = "dataset/" + nbr + "." + str(item[0]) + ".jpg"
-        #print(imagePath)
         try:
             os.remove(imagePath)
         except:
@@ -94,8 +45,6 @@ def generate_dataset(nbr):
     def face_cropped(img):
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         faces = face_classifier.detectMultiScale(gray, 1.3, 5)
-        # scaling factor=1.3
-        # Minimum neighbor = 5
 
         if len(faces) == 0:
             return None
@@ -116,9 +65,9 @@ def generate_dataset(nbr):
     while True:
         ret, img = cap.read()
         if face_cropped(img) is None:
-           frame1 = cv2.resize(img, (200, 200))
-           frame1 = cv2.imencode('.jpg', frame1)[1].tobytes()
-           yield (b'--frame1\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame1 + b'\r\n')
+            frame1 = cv2.resize(img, (200, 200))
+            frame1 = cv2.imencode('.jpg', frame1)[1].tobytes()
+            yield (b'--frame1\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame1 + b'\r\n')
         if face_cropped(img) is not None:
             count_img += 1
             img_id += 1
@@ -127,15 +76,15 @@ def generate_dataset(nbr):
 
             file_name_path = "dataset/" + nbr + "." + str(img_id) + ".jpg"
             cv2.imwrite(file_name_path, face)
-            cv2.putText(face, str(count_img), (5, 15), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
+            cv2.putText(face, str(count_img) + '%', (5, 15), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
 
             mycursor.execute("""INSERT INTO `img_dataset` (`img_id`, `img_person`) VALUES
                                 ('{}', '{}')""".format(img_id, nbr))
             mydb.commit()
+
             if int(img_id) == int(max_imgid):
-                cv2.putText(face, "Train Complete", (5, 30), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
-                cv2.putText(face, "Click Train Button.", (5, 45), cv2.FONT_HERSHEY_COMPLEX, 0.5,
-                            (255, 255, 255), 1)
+                cv2.putText(face, "Training Complete", (5, 30), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
+                cv2.putText(face, "Click Train Face.", (5, 45), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
             frame = cv2.imencode('.jpg', face)[1].tobytes()
             yield (b'--frame1\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
@@ -143,48 +92,59 @@ def generate_dataset(nbr):
                 break
                 cap.release()
                 cv2.destroyAllWindows()
-
-
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Train Classifier >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 @app.route('/train_classifier/<nbr>')
 def train_classifier(nbr):
     user_id = session.get('user_id')  # Get the user's ID from the session
     #dataset_dir = "C:/Users/jd/PycharmProjects/FlaskOpencv_FaceRecognition/dataset"
     if not has_completed_training(user_id):
-        dataset_dir = "dataset"
+        img_count = get_image_count(user_id)  # Get the image count for the user
 
-        path = [os.path.join(dataset_dir, f) for f in os.listdir(dataset_dir)]
-        faces = []
-        ids = []
+        if img_count == 100:
 
-        for image in path:
-            img = Image.open(image).convert('L');
-            imageNp = np.array(img, 'uint8')
-            id = int(os.path.split(image)[1].split(".")[1])
+            dataset_dir = "dataset"
 
-            faces.append(imageNp)
-            ids.append(id)
-        ids = np.array(ids)
+            path = [os.path.join(dataset_dir, f) for f in os.listdir(dataset_dir)]
+            faces = []
+            ids = []
 
-        # Train the classifier and save
-        clf = cv2.face.LBPHFaceRecognizer_create()
-        clf.train(faces, ids)
-        clf.write("classifier.xml")
+            for image in path:
+                img = Image.open(image).convert('L');
+                imageNp = np.array(img, 'uint8')
+                id = int(os.path.split(image)[1].split(".")[1])
 
+                faces.append(imageNp)
+                ids.append(id)
+            ids = np.array(ids)
 
-        mycursor.execute("UPDATE users SET completed_training = 1 WHERE id = %s", (user_id,))
-        mydb.commit()
+            # Train the classifier and save
+            clf = cv2.face.LBPHFaceRecognizer_create()
+            clf.train(faces, ids)
+            clf.write("classifier.xml")
 
-        flash('TRAINING SUCCESSFUL.', 'success')
+            mycursor.execute("UPDATE users SET completed_training = 1 WHERE id = %s", (user_id,))
+            mydb.commit()
+
+            flash('TRAIN SUCCESSFUL.', 'success')
+        else:
+            flash('TRAIN MUST BE 100%', 'danger')
+
     else:
         flash('YOU CAN ONLY TRAIN ONCE.', 'danger')
 
     return redirect('/vfdataset_page')
 
+def get_image_count(user_id):
+    # Assuming you have a database table named img_dataset with user_id field
+    mycursor.execute("SELECT COUNT(*) FROM img_dataset WHERE img_person = %s", (user_id,))
+    row = mycursor.fetchone()
+    count = row[0] if row else 0
+    return count
+
 @app.route('/gendataset')
 def gendataset():
     user_id = session['user_id']
-    user_completed_process = get_user_training_status(user_id)
+    user_completed_process = has_completed_training(user_id)
     return render_template('gendataset.html', user_completed_process=user_completed_process)
 
 def has_completed_training(user_id):
@@ -523,7 +483,7 @@ def login_submit():
                 #if account[14] == 1:
                   session['loggedin'] = True
                   session['user_id'] = account[0]
-                  session['user_name'] = account[1]
+                  session['user_name'] = account[1] + ' ' + account[2]
                   session['user_email'] = account[3]
                   session['user_role'] = account[7]
                   session['user_photo'] = account[13]
@@ -537,7 +497,7 @@ def login_submit():
                 # if account[14] == 1:
                 session['loggedin'] = True
                 session['user_id'] = account[0]
-                session['user_name'] = account[1]
+                session['user_name'] = account[1] + ' ' + account[2]
                 session['user_email'] = account[3]
                 session['user_role'] = account[7]
                 session['user_photo'] = account[13]
@@ -550,7 +510,7 @@ def login_submit():
             else:
                 session['loggedin'] = True
                 session['user_id'] = account[0]
-                session['user_name'] = account[1]
+                session['user_name'] = account[1] + ' ' + account[2]
                 session['user_email'] = account[3]
                 session['user_role'] = account[7]
                 session['user_photo'] = account[13]
@@ -588,7 +548,7 @@ def signup_submit():
            elif not re.match(r'[^@]+@[^@]+\.[^@]+', email):
                flash('Invalid Email Address', 'danger')
            elif not re.match(r'[A-Za-z0-9]+', first_name):
-               flash('Username must contain only characters and numbers !', 'danger')
+               flash('First Name must contain only characters and numbers !', 'danger')
            elif not re.match(password_pattern, password):
                flash('Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one special character (@, #, $, %, ^, &, +, =, !).', 'danger')
            elif not first_name or not password or not email:
@@ -797,12 +757,24 @@ def logout():
     #return redirect(url_for('login'))
     return login_submit()
 
-@app.route('/groups')
+@app.route('/groups', methods=['GET', 'POST'])
 def groups():
     creater_id = session['user_id']
-    mycursor.execute("select id, group_name, date_format(created, '%d-%m-%Y %W %H:%i:%s') from groups where creater_id='" + str(
-            creater_id) + "'")
+
+    if request.method == 'POST':
+        # Check if the request is a renaming request
+        group_id = request.form.get('group_id')
+        new_group_name = request.form.get('new_group_name')
+
+        if group_id and new_group_name:
+            # Perform the update in your database (replace with your actual database update logic)
+            mycursor.execute("UPDATE groups SET group_name = %s WHERE id = %s", (new_group_name, group_id))
+            mydb.commit()
+
+    # Fetch the updated data from the database
+    mycursor.execute("SELECT id, group_name, date_format(created, '%d-%m-%Y %W %H:%i:%s') FROM groups WHERE creater_id='" + str(creater_id) + "'")
     data = mycursor.fetchall()
+
     return render_template('groups.html', data=data)
 
 @app.route('/groups', methods=['POST'])
@@ -879,7 +851,7 @@ def teachersignup_submit():
            elif not re.match(r'[^@]+@[^@]+\.[^@]+', email):
                flash('Invalid email address !', 'danger')
            elif not re.match(r'[A-Za-z0-9]+', first_name):
-               flash('Username must contain only characters and numbers !', 'danger')
+               flash('First Name must contain only characters and numbers !', 'danger')
            elif not re.match(password_pattern, password):
                flash('Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one special character (@, #, $, %, ^, &, +, =, !).', 'danger')
            elif not first_name or not password or not email:
@@ -1040,7 +1012,8 @@ def setrandomattendance():
        duration = request.form['duration']
        user_id = session['user_id']
        status = "active"
-       #random_time = str(request.form.getlist['random_time[]'])
+       session['attendanceduration'] = duration
+
        for random_time in request.form.getlist('random_time[]'):
            print(random_time)
            mycursor.execute(
@@ -1227,6 +1200,25 @@ def updateprofile_submit():
     #return render_template("updateprofile.html")
     return updateprofile()
 
+#####################################################
+@app.route("/meeting")
+def meeting():
+    return render_template("meeting.html")
+
+@app.route("/join", methods=[ "GET" , "POST"])
+def join():
+    if request.method == "POST":
+        room_id = request.form.get("roomID")
+        return redirect(f"/meeting?roomID={room_id}")
+
+    # Retrieve the group_id from the query parameter
+    group_id = request.args.get("group_id")
+
+    # Set room_id based on group_id (You may need to fetch the actual room_id)
+    room_id = group_id
+
+    # Automatically redirect to the meeting page with room_id
+    return redirect(f"/meeting?roomID={room_id}")
 
 ##################################### END USER MANAGEMENT#####################################################
 if __name__ == "__main__":

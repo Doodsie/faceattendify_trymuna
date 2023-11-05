@@ -97,6 +97,24 @@
                 }
             });
         }
+        // Function to close the window after a specified duration
+    function closeWindowAfterDuration(duration) {
+        setTimeout(function() {
+            window.close();
+        }, duration);
+    }
+
+    // Check if session.attendanceduration is not 0
+    {% if session.attendanceduration != 0 and data1 == "no" %}
+    $('#addfaceimg').attr('src', '{{ url_for('video_feed') }}');
+    $('#addfaceimg').show();
+
+    // Calculate the duration in milliseconds
+    var duration = parseInt({{ session.attendanceduration }}) * 60 * 1000;
+
+    // Call the function to close the window after the specified duration
+    closeWindowAfterDuration(duration);
+    {% endif %}
     });
 
     $('.header_nav').removeClass('active');
@@ -115,6 +133,7 @@ function myTimer() {
   clearInterval(myVar);
   $('#addfaceimg').attr('src',''); $('#addfaceimg').hide();
 }
+
 //alert({{ session.attendanceduration }});
 {% endif %}
 
