@@ -19,7 +19,7 @@ justscanned = False
 
 mydb = mysql.connector.connect(
     host=os.getenv("roundhouse.proxy.rlwy.net"),
-    port=os.getenv("20449"),
+     
     user=os.getenv("root"),  
     passwd=os.getenv("f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1"), 
     database=os.getenv("zagusopass")  
@@ -416,7 +416,7 @@ def fr_page():
 @app.route('/countTodayScan')
 def countTodayScan():
   host=os.getenv("roundhouse.proxy.rlwy.net"),
-    port=os.getenv("20449"),
+     
     user=os.getenv("root"),  
     passwd=os.getenv("f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1"), 
     database=os.getenv("zagusopass")  
@@ -435,7 +435,7 @@ def countTodayScan():
 @app.route('/loadData', methods=['GET', 'POST'])
 def loadData():
   host=os.getenv("roundhouse.proxy.rlwy.net"),
-    port=os.getenv("20449"),
+     
     user=os.getenv("root"),  
     passwd=os.getenv("f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1"), 
     database=os.getenv("zagusopass")  
@@ -615,7 +615,7 @@ def updateownprofile_submit():
 def userlist():
     mydb = mysql.connector.connect(
     host=os.getenv("roundhouse.proxy.rlwy.net"),
-    port=os.getenv("20449"),
+     
     user=os.getenv("root"),  
     passwd=os.getenv("f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1"), 
     database=os.getenv("zagusopass")  
@@ -1033,7 +1033,7 @@ def countTodayAttenScan():
     user_id = session['user_id']
     mydb = mysql.connector.connect(
     host=os.getenv("roundhouse.proxy.rlwy.net"),
-    port=os.getenv("20449"),
+     
     user=os.getenv("root"),  
     passwd=os.getenv("f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1"), 
     database=os.getenv("zagusopass")  
