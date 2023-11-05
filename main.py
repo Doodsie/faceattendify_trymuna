@@ -15,16 +15,6 @@ cnt = 0
 pause_cnt = 0
 justscanned = False
 
-    mydb = mysql.connector.connect(
-        host=os.getenv("MYSQLHOST"),
-        port=os.getenv("MYSQLPORT"),
-        user=os.getenv("MYSQLUSER"),
-        passwd=os.getenv("MYSQLPASSWORD"),
-        database=os.getenv("MYSQLDATABASE")
-    )
-
-    mycursor = mydb.cursor(buffered=True)
-
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Generate dataset >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 def generate_dataset(nbr):
     face_classifier = cv2.CascadeClassifier("resources/haarcascade_frontalface_default.xml")
