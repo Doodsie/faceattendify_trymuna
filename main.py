@@ -13,7 +13,6 @@ import re
 
 
 app = Flask(__name__)
-app.secret_key = 'your secret key'
 cnt = 0
 pause_cnt = 0
 justscanned = False
@@ -1221,8 +1220,8 @@ def join():
     return redirect(f"/meeting?roomID={room_id}")
 
 ##################################### END USER MANAGEMENT#####################################################
-if __name__ == "__main__":
-    app.run(host='127.0.0.1', port=5000, debug=True)
+if __name__ == '__main__':
+    app.run(debug=True)
 
 
 
