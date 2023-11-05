@@ -16,13 +16,13 @@ pause_cnt = 0
 justscanned = False
 
 mydb = mysql.connector.connect(
-    host=os.getenv("roundhouse.proxy.rlwy.net"),
-
-    user=os.getenv("root"),
-    passwd=os.getenv("f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1"),
-    database=os.getenv("zagusopass")
-)
-mycursor = mydb.cursor(buffered=True)
+        host=os.getenv("roundhouse.proxy.rlwy.net"),
+        port=os.getenv("20449"),
+        user=os.getenv("root"),
+        passwd=os.getenv("f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1"),
+        database=os.getenv("zagusopass")
+    )
+    mycursor = mydb.cursor(buffered=True)
 
 
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Generate dataset >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -432,7 +432,7 @@ def fr_page():
 def countTodayScan():
     mydb = mysql.connector.connect(
         host=os.getenv("roundhouse.proxy.rlwy.net"),
-
+        port=os.getenv("20449"),
         user=os.getenv("root"),
         passwd=os.getenv("f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1"),
         database=os.getenv("zagusopass")
@@ -452,7 +452,7 @@ def countTodayScan():
 def loadData():
     mydb = mysql.connector.connect(
         host=os.getenv("roundhouse.proxy.rlwy.net"),
-
+        port=os.getenv("20449"),
         user=os.getenv("root"),
         passwd=os.getenv("f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1"),
         database=os.getenv("zagusopass")
@@ -645,7 +645,7 @@ def updateownprofile_submit():
 def userlist():
     mydb = mysql.connector.connect(
         host=os.getenv("roundhouse.proxy.rlwy.net"),
-
+        port=os.getenv("20449"),
         user=os.getenv("root"),
         passwd=os.getenv("f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1"),
         database=os.getenv("zagusopass")
@@ -1088,12 +1088,11 @@ def countTodayAttenScan():
     user_id = session['user_id']
     mydb = mysql.connector.connect(
         host=os.getenv("roundhouse.proxy.rlwy.net"),
-
+        port=os.getenv("20449"),
         user=os.getenv("root"),
         passwd=os.getenv("f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1"),
         database=os.getenv("zagusopass")
     )
-    # mycursor = mydb.cursor()
     mycursor = mydb.cursor(buffered=True)
     # mycursor.execute("select a.group_id,a.random_time,now(),CURRENT_TIME() from random_attendance a left join join_groups c on a.group_id=c.group_id WHERE c.user_id='" + str(user_id) + "' AND DATE(a.created)=CURDATE() AND a.random_time>CURRENT_TIME()")
     # mycursor.execute("select a.id from random_attendance a left join join_groups c on a.group_id=c.group_id WHERE c.user_id='" + str(user_id) + "' AND DATE(a.created)=CURDATE() AND TIME_FORMAT(a.random_time, '%H:%i')=TIME_FORMAT(CURRENT_TIME(), '%H:%i')")
