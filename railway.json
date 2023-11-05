@@ -3,7 +3,7 @@
   "build": {
     "builder": "NIXPACKS",
     "scripts":{
-      "build": "python pip uninstall opencv-python; python pip install libgl1"
+      "build": "python pip install libgl1"
     }
   },
   "deploy": {
