@@ -10,9 +10,11 @@ import time
 from datetime import date, datetime
 import re
 
+app = Flask(__name__)
 cnt = 0
 pause_cnt = 0
 justscanned = False
+
 
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Generate dataset >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 def generate_dataset(nbr):
