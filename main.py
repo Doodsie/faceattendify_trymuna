@@ -10,7 +10,6 @@ import time
 from datetime import date, datetime
 import re
 
-app = Flask(__name__)
 cnt = 0
 pause_cnt = 0
 justscanned = False
@@ -1276,8 +1275,7 @@ def join():
 
 
 ##################################### END USER MANAGEMENT#####################################################
-if __name__ == '__main__':
-    app.run(debug=True)
+
 
 
 
