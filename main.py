@@ -415,7 +415,8 @@ def fr_page():
 
 @app.route('/countTodayScan')
 def countTodayScan():
-  host=os.getenv("roundhouse.proxy.rlwy.net"),
+    mydb = mysql.connector.connect(
+    host=os.getenv("roundhouse.proxy.rlwy.net"),
      
     user=os.getenv("root"),  
     passwd=os.getenv("f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1"), 
