@@ -21,7 +21,7 @@ mydb = mysql.connector.connect(
     host="roundhouse.proxy.rlwy.net",
     user="root",
     passwd="f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1",
-    database="zagusopass",
+    database="zagusopass"
   
 )
 #mycursor = mydb.cursor()
@@ -420,7 +420,7 @@ def countTodayScan():
     host="roundhouse.proxy.rlwy.net",
     user="root",
     passwd="f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1",
-    database="zagusopass",
+    database="zagusopass"
    
 )
   mycursor = mydb.cursor()
@@ -440,7 +440,7 @@ def loadData():
     host="roundhouse.proxy.rlwy.net",
     user="root",
     passwd="f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1",
-    database="zagusopass",
+    database="zagusopass"
    
 )
   mycursor = mydb.cursor()
@@ -620,7 +620,7 @@ def userlist():
     host="roundhouse.proxy.rlwy.net",
     user="root",
     passwd="f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1",
-    database="zagusopass",
+    database="zagusopass"
    
 )
     mycursor = mydb.cursor()
@@ -1038,7 +1038,7 @@ def countTodayAttenScan():
     host="roundhouse.proxy.rlwy.net",
     user="root",
     passwd="f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1",
-    database="zagusopass",
+    database="zagusopass"
    
 )
     #mycursor = mydb.cursor()
