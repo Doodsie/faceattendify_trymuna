@@ -9,6 +9,7 @@ import os
 import time
 from datetime import date, datetime
 import re
+import gunicorn
 
 
 app = Flask(__name__)
@@ -1280,6 +1281,7 @@ def join():
 ##################################### END USER MANAGEMENT#####################################################
 
 if __name__ == "__main__":
-    app.run()
+    gunicorn.app.wsgiapp = app
+    gunicorn.run()
 
 
