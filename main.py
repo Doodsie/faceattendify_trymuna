@@ -1,6 +1,7 @@
 import json
 
 from flask import Flask, render_template, request, session, redirect, url_for, Response, jsonify, flash
+from waitress import serve
 import mysql.connector
 import cv2
 from PIL import Image
@@ -9,7 +10,7 @@ import os
 import time
 from datetime import date, datetime
 import re
-from waitress import serve
+
 
 app = Flask(__name__)
 cnt = 0
