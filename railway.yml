@@ -1,0 +1,10 @@
+version: 1
+commands:
+  - name: Build
+    steps:
+      - name: Install Dependencies
+        run: pip install -r requirements.txt
+  - name: Run
+    steps:
+      - name: Start Application
+        run: gunicorn -c gunicorn_config.py app:app
