@@ -1,7 +1,6 @@
 import json
 
 from flask import Flask, render_template, request, session, redirect, url_for, Response, jsonify, flash
-from waitress import serve
 import mysql.connector
 import cv2
 from PIL import Image
