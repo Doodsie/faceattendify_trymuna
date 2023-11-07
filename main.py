@@ -1281,7 +1281,7 @@ def join():
 ##################################### END USER MANAGEMENT#####################################################
 
 if __name__ == "__main__":
-    gunicorn.main.wsgiapp = app
+    gunicorn.app.wsgiapp = main
     gunicorn.run()
 
 
