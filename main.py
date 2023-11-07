@@ -1281,7 +1281,6 @@ def join():
 
 ##################################### END USER MANAGEMENT#####################################################
 
-gunicorn -c gunicorn_config.py main:app
 
 if __name__ == "__main__":
     app.run()
