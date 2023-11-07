@@ -4,4 +4,4 @@ build:
 
 start:
   name: python-start
-  script: gunicorn -w 4 -b "0.0.0.0:5000" main:app
+  script: gunicorn main:app -b :5000 --timeout 120 --workers=3 --threads=3 --worker-connections=1000
