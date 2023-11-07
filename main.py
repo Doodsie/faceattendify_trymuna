@@ -10,6 +10,7 @@ import time
 from datetime import date, datetime
 import re
 import gunicorn
+import waitress
 
 
 app = Flask(__name__)
@@ -1282,5 +1283,6 @@ def join():
 
 if __name__ == "__main__":
     http_server = WSGIServer(('', 5000), app)
+    http_server.serve_forever()
 
 
