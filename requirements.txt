@@ -13,4 +13,3 @@ opencv-contrib-python-headless
 packaging==23.2
 Pillow==10.0.0
 Werkzeug==3.0.0
-waitress
