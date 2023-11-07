@@ -3,4 +3,4 @@ commands:
   - name: Run
     steps:
       - name: Run Gunicorn
-        run: gunicorn -c gunicorn_config.py app:app
+        run: gunicorn -c gunicorn_config.py main:app
