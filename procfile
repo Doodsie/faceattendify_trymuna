@@ -1,1 +1,1 @@
-web: gunicorn -c gunicorn_config.py gevent app:app
+web: gunicorn -c gunicorn_config.py main:app
