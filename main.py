@@ -17,6 +17,14 @@ app = Flask(__name__)
 cnt = 0
 pause_cnt = 0
 justscanned = False
+mydb = mysql.connector.connect(
+    host=os.getenv("roundhouse.proxy.rlwy.net"),
+    port=os.getenv("20449"),
+    user=os.getenv("root"),
+    passwd=os.getenv("f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1"),
+    database=os.getenv("zagusopass")
+)
+mycursor = mydb.cursor(buffered=True)
 
 
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Generate dataset >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
