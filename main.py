@@ -19,6 +19,16 @@ pause_cnt = 0
 justscanned = False
 
 
+mydb = mysql.connector.connect(
+        host=os.getenv("roundhouse.proxy.rlwy.net"),
+        port=os.getenv("20449"),
+        user=os.getenv("root"),
+        passwd=os.getenv("f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1"),
+        database=os.getenv("zagusopass")
+    )
+    #mycursor = mydb.cursor()
+    mycursor = mydb.cursor(buffered=True)
+
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Generate dataset >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 def generate_dataset(nbr):
     face_classifier = cv2.CascadeClassifier("resources/haarcascade_frontalface_default.xml")
