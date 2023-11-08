@@ -1,1 +1,1 @@
-workers = 10
+workers = 1
