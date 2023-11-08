@@ -10,7 +10,6 @@ import time
 from datetime import date, datetime
 import re
 import gunicorn
-import gevent
 from mysql.connector import connect
 
 
