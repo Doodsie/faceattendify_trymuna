@@ -1,4 +1,4 @@
 build:
 start:
   name: python-start
-  run: gunicorn -c gunicorn_config.py app:main
+  run: gunicorn -c gunicorn_config.py main:app
