@@ -1,7 +1,4 @@
 build:
-  name: python-build
-  script: pip install -r requirements.txt
-
 start:
   name: python-start
   run: gunicorn -c gunicorn_config.py app:app
