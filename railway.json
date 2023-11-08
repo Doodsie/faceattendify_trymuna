@@ -2,8 +2,6 @@
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
     "builder": "NIXPACKS",
-    "scripts":{
-      "build": "pip install libgl1-mesa-glx"
     }
   },
   "deploy": {
