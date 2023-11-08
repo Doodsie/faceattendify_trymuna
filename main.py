@@ -26,8 +26,7 @@ mydb = mysql.connector.connect(
         passwd=os.getenv("f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1"),
         database=os.getenv("zagusopass")
     )
-    #mycursor = mydb.cursor()
-    mycursor = mydb.cursor(buffered=True)
+mycursor = mydb.cursor(buffered=True)
 
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Generate dataset >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 def generate_dataset(nbr):
