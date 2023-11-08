@@ -11,6 +11,7 @@ from datetime import date, datetime
 import re
 import gunicorn
 import gevent
+from mysql.connector import connect
 
 
 app = Flask(__name__)
