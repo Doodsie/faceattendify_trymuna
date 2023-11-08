@@ -22,6 +22,7 @@ justscanned = False
 config = {
     "host": "roundhouse.proxy.rlwy.net",
     "user": "root",
+    "port" = "20449"
     "password": "f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1",
     "database": "zagusopass"
 }
