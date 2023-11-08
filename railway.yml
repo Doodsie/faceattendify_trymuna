@@ -1,4 +1,4 @@
 build:
 start:
   name: python-start
-  run: gunicorn -c gunicorn_config.py -b 0.0.0.0:$PORT --timeout ${WORKER_TIMEOUT} your_main:app 
+  run: gunicorn -c gunicorn_config.py -b 0.0.0.0:$PORT -t 300 your_main:app 
