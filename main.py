@@ -24,7 +24,7 @@ cnx = mysql.connector.connect(
     passwd=os.getenv("f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1"),
     database=os.getenv("zagusopass")
 )
-mycursor = mydb.cursor(buffered=True)
+mycursor = cnx.cursor(buffered=True)
 
 
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Generate dataset >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -40,7 +40,7 @@ def generate_dataset(nbr):
         except:
             pass
     mycursor.execute("delete from img_dataset WHERE img_person='" + str(nbr) + "'")
-    mydb.commit()
+    cnx.commit()
 
     def face_cropped(img):
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -80,7 +80,7 @@ def generate_dataset(nbr):
 
             mycursor.execute("""INSERT INTO `img_dataset` (`img_id`, `img_person`) VALUES
                                 ('{}', '{}')""".format(img_id, nbr))
-            mydb.commit()
+            cnx.commit()
 
             if int(img_id) == int(max_imgid):
                 cv2.putText(face, "Training Complete", (5, 30), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
@@ -125,7 +125,7 @@ def train_classifier(nbr):
             clf.write("classifier.xml")
 
             mycursor.execute("UPDATE users SET completed_training = 1 WHERE id = %s", (user_id,))
-            mydb.commit()
+            cnx.commit()
 
             flash('TRAIN SUCCESSFUL.', 'success')
         else:
@@ -287,7 +287,7 @@ def face_recognition(group_id, attendancetime, attendanceduration, random_attend
                                     date.today()) + "', '" + pnbr + "', '" + str(group_id) + "', '" + str(
                                     atime) + "', '" + str(
                                     random_attendance_id) + "')")
-                            mydb.commit()
+                            cnx.commit()
 
                             time.sleep(1)
 
@@ -432,14 +432,14 @@ def fr_page():
 
 @app.route('/countTodayScan')
 def countTodayScan():
-    mydb = mysql.connector.connect(
+    cnx = mysql.connector.connect(
         host=os.getenv("roundhouse.proxy.rlwy.net"),
         port=os.getenv("20449"),
         user=os.getenv("root"),
         passwd=os.getenv("f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1"),
         database=os.getenv("zagusopass")
     )
-    mycursor = mydb.cursor()
+    mycursor = cnx.cursor()
 
     mycursor.execute("select count(*) "
                      "  from accs_hist "
@@ -452,14 +452,14 @@ def countTodayScan():
 
 @app.route('/loadData', methods=['GET', 'POST'])
 def loadData():
-    mydb = mysql.connector.connect(
+    cnx = mysql.connector.connect(
         host=os.getenv("roundhouse.proxy.rlwy.net"),
         port=os.getenv("20449"),
         user=os.getenv("root"),
         passwd=os.getenv("f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1"),
         database=os.getenv("zagusopass")
     )
-    mycursor = mydb.cursor()
+    mycursor = cnx.cursor()
 
 
     user_id = session['user_id']
@@ -582,7 +582,7 @@ def signup_submit():
                     "insert into users ( first_name, last_name, email, password, user_role, phone) values('" + str(
                         first_name) + "', '" + str(last_name) + "', '" + str(email) + "', '" + str(
                         password) + "', '" + str(user_role) + "', '" + str(phone) + "')")
-                mydb.commit()
+                cnx.commit()
 
                 flash('You have successfully registered', 'success')
                 return add_login_view()
@@ -637,7 +637,7 @@ def updateownprofile_submit():
             "UPDATE users SET first_name='" + str(first_name) + "',last_name='" + str(last_name) + "',email='" + str(
                 email) + "',phone='" + str(phone) + "', photo='" + str(photo) + "', dob='" + str(
                 dob) + "', i_d='" + str(i_d) + "' WHERE id='" + str(userlist_id) + "'")
-        mydb.commit()
+        cnx.commit()
 
     # return render_template("updateownprofile.html")
     return updateownprofile()
@@ -645,14 +645,14 @@ def updateownprofile_submit():
 
 @app.route('/userlist')
 def userlist():
-    mydb = mysql.connector.connect(
+    cnx = mysql.connector.connect(
         host=os.getenv("roundhouse.proxy.rlwy.net"),
         port=os.getenv("20449"),
         user=os.getenv("root"),
         passwd=os.getenv("f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1"),
         database=os.getenv("zagusopass")
     )
-    mycursor = mydb.cursor()
+    mycursor = cnx.cursor()
 
     data1 = ""
     # mycursor.execute("select * from users where user_role!='teacher'")
@@ -675,7 +675,7 @@ def user_functions():
     action = request.args.get('action')
     if action == 'approved':
         mycursor.execute("UPDATE users SET approved='1' WHERE id='" + str(userlistid) + "'")
-        mydb.commit()
+        cnx.commit()
     # return userlist()
     return redirect(url_for('userlist'))
 
@@ -694,14 +694,14 @@ def group_functions():
         else:
             mycursor.execute("INSERT INTO join_groups ( group_id, user_id) VALUES ('" + str(group_id) + "','" + str(
                 userlistid) + "')")
-            mydb.commit()
+            cnx.commit()
         return redirect(url_for('userlist'))
 
     if action == 'approved':
         mycursor.execute(
             "UPDATE join_groups SET user_approved='1' WHERE group_id='" + str(group_id) + "' AND user_id='" + str(
                 userlistid) + "'")
-        mydb.commit()
+        cnx.commit()
         # return userlist()
         return redirect(url_for('grouplist'))
 
@@ -718,7 +718,7 @@ def group_functions():
             else:
                 mycursor.execute("INSERT INTO join_groups ( group_id, user_id) VALUES ('" + str(group_id) + "','" + str(
                     userlistid) + "')")
-                mydb.commit()
+                cnx.commit()
             print(userlistid)
 
         # return render_template('userlist.html', msg=userlist)
@@ -759,7 +759,7 @@ def grouprequest():
         else:
             mycursor.execute("INSERT INTO join_groups ( group_id, user_id) VALUES ('" + str(group_id) + "','" + str(
                 userlistid) + "')")
-            mydb.commit()
+            cnx.commit()
             msg = "inserted"
         # return render_template("grouprequest.html", group_id=group_id,groupteacher=groupteacher,groupname=groupname)
 
@@ -770,7 +770,7 @@ def grouprequest():
         mycursor.execute(
             "UPDATE join_groups SET user_approved='1' WHERE group_id='" + str(group_id) + "' AND user_id='" + str(
                 userlistid) + "'")
-        mydb.commit()
+        cnx.commit()
         # return userlist()
         return redirect(url_for('grouplist'))
 
@@ -808,7 +808,7 @@ def groups():
         if group_id and new_group_name:
             # Perform the update in your database (replace with your actual database update logic)
             mycursor.execute("UPDATE groups SET group_name = %s WHERE id = %s", (new_group_name, group_id))
-            mydb.commit()
+            cnx.commit()
 
     # Fetch the updated data from the database
     mycursor.execute(
@@ -826,7 +826,7 @@ def groups_submit():
         creater_id = session['user_id']
         mycursor.execute(
             "INSERT INTO groups ( group_name, creater_id) VALUES ('" + str(group_name) + "','" + str(creater_id) + "')")
-        mydb.commit()
+        cnx.commit()
     return redirect(url_for('groups'))
 
 
@@ -836,7 +836,7 @@ def delete():
     tname = request.args.get('tname')
     rurl = request.args.get('rurl')
     mycursor.execute("DELETE FROM " + str(tname) + " WHERE id='" + str(id) + "'")
-    mydb.commit()
+    cnx.commit()
     return redirect(url_for(rurl))
 
 
@@ -848,7 +848,7 @@ def grouplist():
     if action == 'remove':
         mycursor.execute(
             "DELETE FROM join_groups WHERE group_id='" + str(group_id) + "' AND user_id='" + str(user_id) + "'")
-        mydb.commit()
+        cnx.commit()
 
     # mycursor.execute("SELECT join_groups.group_id,groups.group_name,join_groups.user_approved FROM join_groups left JOIN groups ON join_groups.group_id=groups.id WHERE user_id='" + str(user_id) + "'")
     mycursor.execute(
@@ -911,7 +911,7 @@ def teachersignup_submit():
                     "insert into users ( first_name, last_name, email, password, user_role, phone) values('" + str(
                         first_name) + "', '" + str(last_name) + "', '" + str(email) + "', '" + str(
                         password) + "', '" + str(user_role) + "', '" + str(phone) + "')")
-                mydb.commit()
+                cnx.commit()
                 flash('You have successfully registered !', 'success')
                 return add_login_view()
         else:
@@ -979,7 +979,7 @@ def agrouplist():
         userlist_id = request.args.get('userlist_id')
         mycursor.execute(
             "DELETE FROM join_groups WHERE group_id='" + str(group_id) + "' AND user_id='" + str(userlist_id) + "'")
-        mydb.commit()
+        cnx.commit()
 
     if action == 'invite':
         userlist_id = request.args.get('userlist_id')
@@ -991,7 +991,7 @@ def agrouplist():
         else:
             mycursor.execute("INSERT INTO join_groups ( group_id, user_id) VALUES ('" + str(group_id) + "','" + str(
                 userlist_id) + "')")
-            mydb.commit()
+            cnx.commit()
 
     if session['actions'] == 'view_members':
         group_id = session['group_id']
@@ -1077,7 +1077,7 @@ def setrandomattendance():
                 "INSERT INTO random_attendance ( user_id, group_id, random_time, duration, status) VALUES ('" + str(
                     user_id) + "','" + str(
                     group_id) + "','" + str(random_time) + "','" + str(duration) + "','" + str(status) + "')")
-            mydb.commit()
+            cnx.commit()
         print(random_time)
 
     data = ""
@@ -1088,14 +1088,14 @@ def setrandomattendance():
 @app.route('/countTodayAttenScan', methods=['GET', 'POST'])
 def countTodayAttenScan():
     user_id = session['user_id']
-    mydb = mysql.connector.connect(
+    cnx = mysql.connector.connect(
         host=os.getenv("roundhouse.proxy.rlwy.net"),
         port=os.getenv("20449"),
         user=os.getenv("root"),
         passwd=os.getenv("f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1"),
         database=os.getenv("zagusopass")
     )
-    mycursor = mydb.cursor(buffered=True)
+    mycursor = cnx.cursor(buffered=True)
     # mycursor.execute("select a.group_id,a.random_time,now(),CURRENT_TIME() from random_attendance a left join join_groups c on a.group_id=c.group_id WHERE c.user_id='" + str(user_id) + "' AND DATE(a.created)=CURDATE() AND a.random_time>CURRENT_TIME()")
     # mycursor.execute("select a.id from random_attendance a left join join_groups c on a.group_id=c.group_id WHERE c.user_id='" + str(user_id) + "' AND DATE(a.created)=CURDATE() AND TIME_FORMAT(a.random_time, '%H:%i')=TIME_FORMAT(CURRENT_TIME(), '%H:%i')")
     mycursor.execute(
@@ -1159,7 +1159,7 @@ def add_user():
             mycursor.execute(
                 "INSERT INTO users (first_name, last_name, email, user_role, password) VALUES (%s, %s, %s, %s, %s)",
                 (first_name, last_name, email, user_role, password))
-            mydb.commit()
+            cnx.commit()
             flash('User added successfully.', 'success')
 
     return redirect(url_for('users'))
@@ -1196,13 +1196,13 @@ def edit_user(user_id):
                 mycursor.execute(
                     "UPDATE users SET first_name = %s, last_name = %s, email = %s, user_role = %s, password = %s WHERE id = %s",
                     (first_name, last_name, email, user_role, password, user_id))
-                mydb.commit()
+                cnx.commit()
                 flash('User updated successfully.', 'success')
             else:
                 mycursor.execute(
                     "UPDATE users SET first_name = %s, last_name = %s, email = %s, user_role = %s WHERE id = %s",
                     (first_name, last_name, email, user_role, user_id))
-                mydb.commit()
+                cnx.commit()
                 flash('User updated successfully.', 'success')
             return redirect(url_for('users'))
 
@@ -1213,7 +1213,7 @@ def edit_user(user_id):
 def delete_user(user_id):
     # Delete a user from the database
     mycursor.execute("DELETE FROM users WHERE id = %s", (user_id,))
-    mydb.commit()
+    cnx.commit()
     flash('User deleted successfully.', 'success')
     return redirect(url_for('users'))
 
@@ -1259,7 +1259,7 @@ def updateprofile_submit():
                 email) + "',phone='" + str(phone) + "', photo='" + str(photo) + "', address_line1='" + str(
                 address_line1) + "', address_line2='" + str(address_line2) + "', dob='" + str(dob) + "', i_d='" + str(
                 i_d) + "' WHERE id='" + str(userlist_id) + "'")
-        mydb.commit()
+        cnx.commit()
 
     # return render_template("updateprofile.html")
     return updateprofile()
