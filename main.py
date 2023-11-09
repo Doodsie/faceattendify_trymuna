@@ -24,7 +24,7 @@ cnx = mysql.connector.connect(
     passwd=os.getenv("f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1"),
     database=os.getenv("zagusopass")
 )
-mydb = cnx.cursor(buffered=True)
+mycursor = cnx.cursor(buffered=True)
 
 
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Generate dataset >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
