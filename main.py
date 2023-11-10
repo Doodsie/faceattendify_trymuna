@@ -19,7 +19,7 @@ pause_cnt = 0
 justscanned = False
 
 cnx = mysql.connector.connect(**config)
-cursor = cnx.cursor(buffered=True)
+mycursor = cnx.cursor(buffered=True)
 
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Generate dataset >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 def generate_dataset(nbr):
