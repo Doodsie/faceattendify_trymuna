@@ -433,12 +433,7 @@ def fr_page():
 
 @app.route('/countTodayScan')
 def countTodayScan():
-    cnx = mysql.connector.connect(
-        host=os.getenv("roundhouse.proxy.rlwy.net"),
-        port=os.getenv("20449"),
-        user=os.getenv("root"),
-        passwd=os.getenv("f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1"),
-        database=os.getenv("zagusopass")
+    cnx = mysql.connector.connect(**config)
     )
     mycursor = cnx.cursor()
 
@@ -453,12 +448,7 @@ def countTodayScan():
 
 @app.route('/loadData', methods=['GET', 'POST'])
 def loadData():
-    cnx = mysql.connector.connect(
-        host=os.getenv("roundhouse.proxy.rlwy.net"),
-        port=os.getenv("20449"),
-        user=os.getenv("root"),
-        passwd=os.getenv("f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1"),
-        database=os.getenv("zagusopass")
+    cnx = mysql.connector.connect(**config)
     )
     mycursor = cnx.cursor()
 
@@ -646,12 +636,7 @@ def updateownprofile_submit():
 
 @app.route('/userlist')
 def userlist():
-    cnx = mysql.connector.connect(
-        host=os.getenv("roundhouse.proxy.rlwy.net"),
-        port=os.getenv("20449"),
-        user=os.getenv("root"),
-        passwd=os.getenv("f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1"),
-        database=os.getenv("zagusopass")
+    cnx = mysql.connector.connect(**config)
     )
     mycursor = cnx.cursor()
 
@@ -1089,12 +1074,7 @@ def setrandomattendance():
 @app.route('/countTodayAttenScan', methods=['GET', 'POST'])
 def countTodayAttenScan():
     user_id = session['user_id']
-    cnx = mysql.connector.connect(
-        host=os.getenv("roundhouse.proxy.rlwy.net"),
-        port=os.getenv("20449"),
-        user=os.getenv("root"),
-        passwd=os.getenv("f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1"),
-        database=os.getenv("zagusopass")
+    cnx = mysql.connector.connect(**config)
     )
     mycursor = cnx.cursor(buffered=True)
     # mycursor.execute("select a.group_id,a.random_time,now(),CURRENT_TIME() from random_attendance a left join join_groups c on a.group_id=c.group_id WHERE c.user_id='" + str(user_id) + "' AND DATE(a.created)=CURDATE() AND a.random_time>CURRENT_TIME()")
