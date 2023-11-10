@@ -18,6 +18,13 @@ cnt = 0
 pause_cnt = 0
 justscanned = False
 
+config = {
+    "host": "roundhouse.proxy.rlwy.net",
+    "user": "root",
+    "password": "f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1",
+    "database": "zagusopass"
+}
+
 cnx = mysql.connector.connect(**config)
 mycursor = cnx.cursor(buffered=True)
 
