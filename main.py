@@ -19,7 +19,10 @@ pause_cnt = 0
 justscanned = False
 
 config = {
-    "Private_Url": "mysql://root:f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1@mysql.railway.internal:3306/zagusopass"
+    "host": "roundhouse.proxy.rlwy.net",
+    "user": "root",
+    "password": "f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1",
+    "database": "zagusopass"
 }
 
 cnx = mysql.connector.connect(**config)
