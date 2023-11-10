@@ -661,7 +661,7 @@ def userlist():
         "SELECT DISTINCT(b.img_person), a.* FROM users a LEFT JOIN img_dataset b ON a.id = b.img_person WHERE user_role NOT IN ('teacher', 'admin')")
     data = cursor.fetchall()
     creater_id = session['user_id']
-    cursor.execute("select * from groups WHERE creater_id='" + str(creater_id) + "'")
+    cursor.execute("select * from tbl_groups WHERE creater_id='" + str(creater_id) + "'")
     data1 = cursor.fetchall()
     cursor.execute("select * from join_groups")
     data2 = cursor.fetchall()
@@ -808,12 +808,12 @@ def groups():
 
         if group_id and new_group_name:
             # Perform the update in your database (replace with your actual database update logic)
-            cursor.execute("UPDATE groups SET group_name = %s WHERE id = %s", (new_group_name, group_id))
+            cursor.execute("UPDATE tbl_groups SET group_name = %s WHERE id = %s", (new_group_name, group_id))
             cnx.commit()
 
     # Fetch the updated data from the database
     cursor.execute(
-        "SELECT id, group_name, date_format(created, '%d-%m-%Y %W %H:%i:%s') FROM groups WHERE creater_id='" + str(
+        "SELECT id, group_name, date_format(created, '%d-%m-%Y %W %H:%i:%s') FROM tbl_groups WHERE creater_id='" + str(
             creater_id) + "'")
     data = cursor.fetchall()
 
@@ -826,7 +826,7 @@ def groups_submit():
         group_name = request.form['group_name']
         creater_id = session['user_id']
         cursor.execute(
-            "INSERT INTO groups ( group_name, creater_id) VALUES ('" + str(group_name) + "','" + str(creater_id) + "')")
+            "INSERT INTO tbl_groups ( group_name, creater_id) VALUES ('" + str(group_name) + "','" + str(creater_id) + "')")
         cnx.commit()
     return redirect(url_for('groups'))
 
@@ -943,7 +943,7 @@ def report():
             "select c.group_name, a.accs_prsn, b.first_name, b.last_name, date_format(a.accs_added, '%d-%m-%Y %W %H:%i:%s') "
             "  from accs_hist a "
             "  left join users b on a.accs_prsn = b.id "
-            "  left join groups c on a.group_id = c.id "
+            "  left join tbl_groups c on a.group_id = c.id "
             " where b.id = " + str(user_id) +
             "" + str(filters) +
             " order by a.accs_id desc")
@@ -952,7 +952,7 @@ def report():
             "select c.group_name, a.accs_prsn, b.first_name, b.last_name, date_format(a.accs_added, '%d-%m-%Y %W %H:%i:%s') "
             "  from accs_hist a "
             "  left join users b on a.accs_prsn = b.id "
-            "  left join groups c on a.group_id = c.id "
+            "  left join tbl_groups c on a.group_id = c.id "
             " where b.id != 0"
             "" + str(filters) +
             " order by a.accs_id desc")
