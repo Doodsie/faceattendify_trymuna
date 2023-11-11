@@ -579,13 +579,17 @@ def login_submit():
             flash('Email or password Incorrect', 'danger')
     return render_template('login.html', msg=msg)
 
+
 @app.route('/signup')
 def signup():
   msg = ""
   return render_template('signup.html', msg=msg)
 
+
 @app.route('/signup', methods=['POST'])
 def signup_submit():
+    cnx = mysql.connector.connect(**config)
+    mycursor = cnx.cursor(buffered=True)
     msg = ""
     if request.method == 'POST' and 'first_name' in request.form and 'last_name' in request.form and 'password' in request.form and 'email' in request.form:
         first_name = request.form['first_name']
@@ -1228,8 +1232,6 @@ def updateprofile_submit():
         email = request.form['email']
         phone = request.form['phone']
         dob = request.form['dob']
-        address_line1 = request.form['address_line1']
-        address_line2 = request.form['address_line2']
         i_d = request.form['i_d']
         userlist_id = session['userlist_id']
         photo = request.form['photo']
@@ -1244,7 +1246,7 @@ def updateprofile_submit():
         else:
             photo = request.form['photo']
 
-        mycursor.execute("UPDATE users SET first_name='" + str(first_name) + "',last_name='" + str(last_name) + "',email='" + str(email) + "',phone='" + str(phone) + "', photo='" + str(photo) + "', address_line1='" + str(address_line1) + "', address_line2='" + str(address_line2) + "', dob='" + str(dob) + "', i_d='" + str(i_d) + "' WHERE id='" + str(userlist_id) + "'")
+        mycursor.execute("UPDATE users SET first_name='" + str(first_name) + "',last_name='" + str(last_name) + "',email='" + str(email) + "',phone='" + str(phone) + "', photo='" + str(photo) + "', dob='" + str(dob) + "', i_d='" + str(i_d) + "' WHERE id='" + str(userlist_id) + "'")
         cnx.commit()
 
     #return render_template("updateprofile.html")
