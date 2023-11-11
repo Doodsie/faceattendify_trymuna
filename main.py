@@ -23,6 +23,7 @@ config = {
     "user": "root",
     "password": "f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1",
     "database": "zagusopass"
+    "port": "3306"
 }
 
 cnx = mysql.connector.connect(**config)
