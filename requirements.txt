@@ -13,4 +13,4 @@ opencv-contrib-python-headless
 Pillow
 Werkzeug
 mysql-connector-python
-
+gevent
