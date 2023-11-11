@@ -14,6 +14,7 @@ import gevent
 
 
 app = Flask(__name__)
+app.secret_key = 'pisatindipay'
 cnt = 0
 pause_cnt = 0
 justscanned = False
