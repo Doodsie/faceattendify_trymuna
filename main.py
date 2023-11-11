@@ -709,6 +709,7 @@ def user_functions():
 @app.route('/group_functions', methods=['GET', 'POST'])
 def group_functions():
     cnx = mysql.connector.connect(**config)
+    mycursor = cnx.cursor(buffered=True)
     userlistid = request.args.get('userlistid')
     group_id = request.args.get('group_id')
     action = request.args.get('action')
