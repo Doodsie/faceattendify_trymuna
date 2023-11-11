@@ -32,7 +32,6 @@ mycursor = cnx.cursor(buffered=True)
 
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Generate dataset >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 def generate_dataset(nbr):
-    
     face_classifier = cv2.CascadeClassifier("resources/haarcascade_frontalface_default.xml")
 
     mycursor.execute("select * from img_dataset WHERE img_person='" + str(nbr) + "'")
@@ -101,8 +100,6 @@ def generate_dataset(nbr):
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Train Classifier >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 @app.route('/train_classifier/<nbr>')
 def train_classifier(nbr):
-    cnx = mysql.connector.connect(**config)
-    mycursor = cnx.cursor()
     user_id = session.get('user_id')  # Get the user's ID from the session
     # dataset_dir = "C:/Users/jd/PycharmProjects/FlaskOpencv_FaceRecognition/dataset"
     if not has_completed_training(user_id):
@@ -153,8 +150,6 @@ def get_image_count(user_id):
 
 @app.route('/gendataset')
 def gendataset():
-    cnx = mysql.connector.connect(**config)
-    mycursor = cnx.cursor()
     user_id = session['user_id']
     user_completed_process = has_completed_training(user_id)
     return render_template('gendataset.html', user_completed_process=user_completed_process)
@@ -363,8 +358,6 @@ def vidfeed_dataset(nbr):
 
 @app.route('/video_feed', methods=['GET', 'POST'])
 def video_feed():
-    cnx = mysql.connector.connect(**config)
-    mycursor = cnx.cursor()
     random_attendance_id = session['random_attendance_id']
     mycursor.execute("select a.group_id, a.random_time, a.duration "
                      "  from random_attendance a "
@@ -392,8 +385,6 @@ def video_show():
 
 @app.route('/fr_page', methods=['GET', 'POST'])
 def fr_page():
-    cnx = mysql.connector.connect(**config)
-    mycursor = cnx.cursor()
     """Video streaming home page."""
     user_id = session['user_id']
     data = ""
@@ -492,8 +483,6 @@ def add_login_view():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login_submit():
-    cnx = mysql.connector.connect(**config)
-    mycursor = cnx.cursor()
     msg = ""
     if request.method == 'POST' and 'email' in request.form and 'password' in request.form:
         email = request.form['email']
@@ -601,8 +590,6 @@ def signup_submit():
 
 @app.route('/updateownprofile')
 def updateownprofile():
-    cnx = mysql.connector.connect(**config)
-    mycursor = cnx.cursor()
     # Check if user is loggedin
     if 'loggedin' in session:
         # We need all the account info for the user so we can display it on the profile page
@@ -620,8 +607,6 @@ app.config["IMAGE_UPLOADS"] = "static/user_photo"
 
 @app.route('/updateownprofile', methods=['GET', 'POST'])
 def updateownprofile_submit():
-    cnx = mysql.connector.connect(**config)
-    mycursor = cnx.cursor()
     if request.method == "POST":
         first_name = request.form['first_name']
         last_name = request.form['last_name']
@@ -676,8 +661,6 @@ def userlist():
 
 @app.route('/user_functions', methods=['GET', 'POST'])
 def user_functions():
-    cnx = mysql.connector.connect(**config)
-    mycursor = cnx.cursor()
     userlistid = request.args.get('userlistid')
     action = request.args.get('action')
     if action == 'approved':
@@ -689,8 +672,6 @@ def user_functions():
 
 @app.route('/group_functions', methods=['GET', 'POST'])
 def group_functions():
-    cnx = mysql.connector.connect(**config)
-    mycursor = cnx.cursor()
     userlistid = request.args.get('userlistid')
     group_id = request.args.get('group_id')
     action = request.args.get('action')
@@ -736,8 +717,6 @@ def group_functions():
 
 @app.route('/grouprequest', methods=['GET', 'POST'])
 def grouprequest():
-    cnx = mysql.connector.connect(**config)
-    mycursor = cnx.cursor()
     if 'loggedin' in session:
         m = ""
     else:
@@ -809,8 +788,6 @@ def logout():
 
 @app.route('/groups', methods=['GET', 'POST'])
 def groups():
-    cnx = mysql.connector.connect(**config)
-    mycursor = cnx.cursor()
     creater_id = session['user_id']
 
     if request.method == 'POST':
@@ -834,8 +811,6 @@ def groups():
 
 @app.route('/groups', methods=['POST'])
 def groups_submit():
-    cnx = mysql.connector.connect(**config)
-    mycursor = cnx.cursor()
     if request.method == "POST":
         group_name = request.form['group_name']
         creater_id = session['user_id']
@@ -847,8 +822,6 @@ def groups_submit():
 
 @app.route('/delete', methods=['GET', 'POST'])
 def delete():
-    cnx = mysql.connector.connect(**config)
-    mycursor = cnx.cursor()
     id = request.args.get('id')
     tname = request.args.get('tname')
     rurl = request.args.get('rurl')
@@ -859,8 +832,6 @@ def delete():
 
 @app.route('/grouplist', methods=['GET', 'POST'])
 def grouplist():
-    cnx = mysql.connector.connect(**config)
-    mycursor = cnx.cursor()
     user_id = session['user_id']
     action = request.args.get('action')
     group_id = request.args.get('group_id')
@@ -899,8 +870,6 @@ def teachersignup():
 
 @app.route('/teachersignup', methods=['POST'])
 def teachersignup_submit():
-    cnx = mysql.connector.connect(**config)
-    mycursor = cnx.cursor()
     msg = ""
     if request.method == 'POST' and 'first_name' in request.form and 'last_name' in request.form and 'password' in request.form and 'email' in request.form:
         first_name = request.form['first_name']
@@ -944,8 +913,6 @@ def teachersignup_submit():
 
 @app.route('/report', methods=['GET', 'POST'])
 def report():
-    cnx = mysql.connector.connect(**config)
-    mycursor = cnx.cursor()
     user_id = session['user_id']
     user_role = session['user_role']
     filters = ""
@@ -985,8 +952,6 @@ def report():
 
 @app.route('/agrouplist', methods=['GET', 'POST'])
 def agrouplist():
-    cnx = mysql.connector.connect(**config)
-    mycursor = cnx.cursor()
     group_id = request.args.get('group_id')
     groupteacher = request.args.get('groupteacher')
     groupname = request.args.get('groupname')
@@ -1060,8 +1025,6 @@ def agrouplist():
 
 @app.route('/loadattendanceData', methods=['GET', 'POST'])
 def loadattendanceData():
-    cnx = mysql.connector.connect(**config)
-    mycursor = cnx.cursor()
     group_id = session['group_id']
     mycursor.execute(
         "select COUNT(a.accs_prsn) as v, b.first_name, b.last_name,a.accs_prsn from accs_hist a left join users b on a.accs_prsn = b.id where a.group_id = '" + str(
@@ -1073,8 +1036,6 @@ def loadattendanceData():
 
 @app.route('/loadattendanceDatareport', methods=['GET', 'POST'])
 def loadattendanceDatareport():
-    cnx = mysql.connector.connect(**config)
-    mycursor = cnx.cursor()
     user_id = session['user_id']
     user_role = session['user_role']
     # group_id = session['group_id']
@@ -1093,8 +1054,6 @@ def loadattendanceDatareport():
 
 @app.route('/setrandomattendance', methods=['GET', 'POST'])
 def setrandomattendance():
-    cnx = mysql.connector.connect(**config)
-    mycursor = cnx.cursor()
     if request.method == "POST":
         group_id = request.form['group_id']
         duration = request.form['duration']
@@ -1151,8 +1110,6 @@ def countTodayAttenScan():
 
 @app.route('/users')
 def users():
-    cnx = mysql.connector.connect(**config)
-    mycursor = cnx.cursor()
     # Fetch and display the list of users from the database
     mycursor.execute("SELECT id, first_name, last_name, email, user_role, password FROM users")
     users = [{'id': user[0], 'first_name': user[1], 'last_name': user[2], 'email': user[3], 'user_role': user[4],
@@ -1162,8 +1119,6 @@ def users():
 
 @app.route('/add_user', methods=['POST'])
 def add_user():
-    cnx = mysql.connector.connect(**config)
-    mycursor = cnx.cursor()
     # Add a new user to the database
     if request.method == 'POST':
         first_name = request.form['first_name']
@@ -1197,8 +1152,6 @@ def add_user():
 
 @app.route('/edit_user/<int:user_id>', methods=['GET', 'POST'])
 def edit_user(user_id):
-    cnx = mysql.connector.connect(**config)
-    mycursor = cnx.cursor()
     # Edit an existing user's information
     mycursor.execute("SELECT id, first_name, last_name, email, user_role, password FROM users WHERE id = %s",
                      (user_id,))
@@ -1243,8 +1196,6 @@ def edit_user(user_id):
 
 @app.route('/delete_user/<int:user_id>', methods=['POST'])
 def delete_user(user_id):
-    cnx = mysql.connector.connect(**config)
-    mycursor = cnx.cursor()
     # Delete a user from the database
     mycursor.execute("DELETE FROM users WHERE id = %s", (user_id,))
     cnx.commit()
@@ -1254,8 +1205,6 @@ def delete_user(user_id):
 
 @app.route('/updateprofile', methods=['GET'])
 def updateprofile():
-    cnx = mysql.connector.connect(**config)
-    mycursor = cnx.cursor()
     userlist_id = ""
     if request.args.get('id') != "" and request.args.get('id') != None:
         session['userlist_id'] = request.args.get('id')
@@ -1268,8 +1217,6 @@ def updateprofile():
 
 @app.route('/updateprofile', methods=['POST'])
 def updateprofile_submit():
-    cnx = mysql.connector.connect(**config)
-    mycursor = cnx.cursor()
     if request.method == "POST":
         first_name = request.form['first_name']
         last_name = request.form['last_name']
@@ -1311,8 +1258,6 @@ def meeting():
 
 @app.route("/join", methods=["GET", "POST"])
 def join():
-    cnx = mysql.connector.connect(**config)
-    mycursor = cnx.cursor()
     if request.method == "POST":
         room_id = request.form.get("roomID")
         return redirect(f"/meeting?roomID={room_id}")
