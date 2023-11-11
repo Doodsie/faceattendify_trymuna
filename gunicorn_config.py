@@ -1,3 +1,3 @@
 # gunicorn_config.py
 workers = 4
-timeout = 600
+timeout = 30
