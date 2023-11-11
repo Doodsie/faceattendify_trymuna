@@ -527,7 +527,6 @@ def add_login_view():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login_submit():
-
     msg = ""
     if request.method == 'POST' and 'email' in request.form and 'password' in request.form:
         email = request.form['email']
@@ -630,6 +629,8 @@ def signup_submit():
 
 @app.route('/updateownprofile')
 def updateownprofile():
+    cnx = mysql.connector.connect(**config)
+    mycursor = cnx.cursor()
     # Check if user is loggedin
     if 'loggedin' in session:
         # We need all the account info for the user so we can display it on the profile page
