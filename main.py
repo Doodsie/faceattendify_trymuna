@@ -234,7 +234,6 @@ def face_show():
 
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Face Recognition >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # Global variables for liveness detection
-# Global variables for liveness detection
 last_face_detection_time = time.time()
 face_detected = False
 
@@ -855,7 +854,7 @@ def grouplist():
         mycursor.execute("DELETE FROM join_groups WHERE group_id='" + str(group_id) + "' AND user_id='" + str(user_id) + "'")
         cnx.commit()
 
-    mycursor.execute("SELECT join_groups.group_id,groups.group_name,join_groups.user_approved,users.first_name,users.last_name FROM join_groups left JOIN groups ON join_groups.group_id=groups.id left JOIN users ON groups.creater_id=users.id WHERE user_id='" + str(
+    mycursor.execute("SELECT join_groups.group_id,tbl_groups.group_name,join_groups.user_approved,users.first_name,users.last_name FROM join_groups left JOIN tbl_groups ON join_groups.group_id=tbl_groups.id left JOIN users ON tbl_groups.creater_id=users.id WHERE user_id='" + str(
             user_id) + "'")
     data = mycursor.fetchall()
 
