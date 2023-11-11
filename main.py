@@ -526,6 +526,9 @@ def add_login_view():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login_submit():
+    cnx = mysql.connector.connect(**config)
+    mycursor = cnx.cursor(buffered=True)
+
     msg = ""
     if request.method == 'POST' and 'email' in request.form and 'password' in request.form:
         email = request.form['email']
