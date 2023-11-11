@@ -70,6 +70,7 @@
             })
         }
 
+
         function reloadTable() {
             $.ajax({
                 url: '/loadData',
@@ -97,7 +98,7 @@
                 }
             });
         }
-        // Function to close the window after a specified duration
+          // Function to close the window after a specified duration
     function closeWindowAfterDuration(duration) {
         setTimeout(function() {
             window.close();
@@ -110,7 +111,7 @@
     $('#addfaceimg').show();
 
     // Calculate the duration in milliseconds
-    var duration = parseInt({{ session.attendanceduration }}) * 60 * 1000;
+    var duration = parseInt({{ session.attendanceduration }}) * 58 * 1000;
 
     // Call the function to close the window after the specified duration
     closeWindowAfterDuration(duration);
@@ -133,7 +134,6 @@ function myTimer() {
   clearInterval(myVar);
   $('#addfaceimg').attr('src',''); $('#addfaceimg').hide();
 }
-
 //alert({{ session.attendanceduration }});
 {% endif %}
 

@@ -51,6 +51,7 @@
 
             <a class="btn btn-success btn-lg" href="{{ url_for('train_classifier', nbr=prs) }}" id="training" style="display:none;"> Train Face</a>
 
+
         </div>
     </div>
     <div class="row mt-5">
@@ -64,9 +65,9 @@
             <h4>Please ensure that you train your face in a good lighting condition.</h4>
         </div>
     </div>
-            {% else %}
+     {% else %}
               <h1>You can only Train your face ONCE.</h1>
-              <h3>Please end a Request to an Admin. Thank you!</h3>
+              <h3>Contact an admin for more info.</h3>
             {% endif %}
 
 </section>
