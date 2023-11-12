@@ -90,42 +90,19 @@ $('.header_nav').removeClass('active');
 $('.vfdataset_page').addClass('active');
 $('#header_page_title').html('Face Registration');
 
-     let videoStream;
-
-    function startCamera() {
-        navigator.mediaDevices.getUserMedia({ video: true })
-            .then(stream => {
-                document.getElementById("addfaceimg").srcObject = stream;
-                videoStream = stream;
-            })
-            .catch(error => {
-                console.error("Error accessing the camera:", error);
-            });
-    }
-
-    function stopCamera() {
-        if (videoStream) {
-            const tracks = videoStream.getTracks();
-            tracks.forEach(track => track.stop());
-            document.getElementById("addfaceimg").srcObject = null;
-        }
-    }
-
-    // Update the existing startDataset and stopDataset functions
-    function startDataset() {
-        startCamera();
+     function startDataset() {
+        $('#addfaceimg').attr('src', '{{ url_for('vidfeed_dataset', nbr=prs) }}');
         $('#addfaceimg').show();
         $('#addfacestart').hide();
         $('#addfacestop').show();
-        $('#training').show();
+        $('#training').show(); // Use the updated ID here
     }
 
     function stopDataset() {
-        stopCamera();
         $('#addfaceimg').attr('src', '');
         $('#addfaceimg').hide();
         $('#addfacestart').show();
-        $('#training').show();
+       $('#training').show(); // Use the updated ID here
     }
 
     // Handle the click event of the Train Face button
