@@ -35,7 +35,7 @@ mycursor.execute("""
         img_id INT AUTO_INCREMENT PRIMARY KEY,
         img_person INT,
         img_data LONGBLOB,
-        FOREIGN KEY (img_person) REFERENCES users(user_id)
+        FOREIGN KEY (img_person) REFERENCES users(id)
     )
 """)
 cnx.commit()
