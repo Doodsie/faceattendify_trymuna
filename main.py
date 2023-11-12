@@ -70,8 +70,11 @@ def generate_dataset(nbr):
         for (x, y, w, h) in faces:
             cropped_face = img[y:y + h, x:x + w]
         return cropped_face
-
-    cap = cv2.VideoCapture(1)
+for i in range(10):
+    cap = cv2.VideoCapture(i)
+    if cap.isOpened():
+        print(f"Camera found at index {i}")
+        break
 
     mycursor.execute("select ifnull(max(img_id), 0) from img_dataset")
     row = mycursor.fetchone()
@@ -247,8 +250,11 @@ def face_show():
     clf.read("classifier.xml")
 
     wCam, hCam = 400, 400
-
-    cap = cv2.VideoCapture(1)
+for i in range(10):
+    cap = cv2.VideoCapture(i)
+    print(f"Camera found at index {i}")
+    break
+    if cap.isOpened():
     cap.set(3, wCam)
     cap.set(4, hCam)
 
@@ -406,8 +412,10 @@ def face_recognition(group_id, attendancetime, attendanceduration, random_attend
     clf.read("classifier.xml")
 
     wCam, hCam = 400, 400
-
-    cap = cv2.VideoCapture(0)
+for i in range(10):
+    cap = cv2.VideoCapture(i)
+    print(f"Camera found at index {i}")
+        break
     cap.set(3, wCam)
     cap.set(4, hCam)
 
