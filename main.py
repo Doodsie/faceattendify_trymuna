@@ -59,7 +59,7 @@ def generate_dataset(nbr):
         cropped_face = img[y:y + h, x:x + w]
         return cropped_face
 
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(2)
 
     mycursor.execute("select ifnull(max(img_id), 0) from img_dataset")
     row = mycursor.fetchone()
@@ -216,7 +216,7 @@ def face_show():
 
     wCam, hCam = 400, 400
 
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(2)
     cap.set(3, wCam)
     cap.set(4, hCam)
 
