@@ -11,4 +11,3 @@ numpy
 Pillow
 Werkzeug
 mysql-connector-python
-gevent
