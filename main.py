@@ -30,7 +30,10 @@ config = {
 cnx = mysql.connector.connect(**config)
 mycursor = cnx.cursor(buffered=True)
 
-
+@app.route('/')
+def index():
+    return render_template('indexx.html')
+    
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Generate dataset >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 def generate_dataset(nbr):
     face_classifier = cv2.CascadeClassifier("resources/haarcascade_frontalface_default.xml")
