@@ -1097,37 +1097,48 @@ def setrandomattendance():
 
 @app.route('/countTodayAttenScan', methods=['GET', 'POST'])
 def countTodayAttenScan():
-    user_id = session['user_id']
-    cnx = mysql.connector.connect(**config)
-    mycursor = cnx.cursor(buffered=True)
+    user_id = session.get('user_id')  # Use get to avoid KeyError if 'user_id' is not in session
+    if user_id is None:
+        return jsonify({'error': 'User not authenticated'}), 401
 
-    mycursor.execute(
-        "SELECT a.id "
-        "FROM random_attendance a "
-        "LEFT JOIN tbl_groups c ON a.group_id = c.group_id "
-        "WHERE c.user_id='" + str(user_id) + "' "
-        "AND DATE(a.created) = CURDATE() "
-        "AND TIME_FORMAT(a.random_time, '%H') = TIME_FORMAT(CURRENT_TIME(), '%H') "
-        "AND TIME_FORMAT(CURRENT_TIME(), '%i') - TIME_FORMAT(a.random_time, '%i') = 0"
-    )
-    row = mycursor.fetchone()
-    print(row)
-    random_attendance_id = ""
-    if row:
-        print("row")
+    try:
+        cnx = mysql.connector.connect(**config)
+        mycursor = cnx.cursor(buffered=True)
 
-        random_attendance_id = str(row[0])
-        mycursor.execute(
-            "select count(*) from accs_hist a WHERE a.accs_prsn='" + str(
-                user_id) + "' AND a.random_attendance_id ='" + str(random_attendance_id) + "'")
-        row1 = mycursor.fetchone()
-        rowcount = row1[0]
-        if rowcount>0:
-            print("done already")
-        else:
-            session['random_attendance_id'] = random_attendance_id
-    print(random_attendance_id)
-    return jsonify({'random_attendance_id': random_attendance_id})
+        query = (
+            "SELECT a.id "
+            "FROM random_attendance a "
+            "LEFT JOIN join_groups c ON a.group_id = c.group_id "
+            "WHERE c.user_id = %s AND DATE(a.created) = CURDATE() "
+            "AND TIME_FORMAT(a.random_time, '%H') = TIME_FORMAT(CURRENT_TIME(), '%H') "
+            "AND TIME_FORMAT(CURRENT_TIME(), '%i') - TIME_FORMAT(a.random_time, '%i') = 0"
+        )
+
+        mycursor.execute(query, (user_id,))
+        row = mycursor.fetchone()
+
+        random_attendance_id = ""
+        if row:
+            random_attendance_id = str(row[0])
+            query = (
+                "SELECT COUNT(*) "
+                "FROM accs_hist a "
+                "WHERE a.accs_prsn = %s AND a.random_attendance_id = %s"
+            )
+            mycursor.execute(query, (user_id, random_attendance_id))
+            row_count = mycursor.fetchone()[0]
+
+            if row_count == 0:
+                session['random_attendance_id'] = random_attendance_id
+
+        return jsonify({'random_attendance_id': random_attendance_id})
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+    finally:
+        mycursor.close()
+        cnx.close()
 
 
 
