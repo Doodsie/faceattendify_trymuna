@@ -10,7 +10,7 @@ import time
 from datetime import date, datetime
 import re
 import gunicorn
-import base64
+import io
 
 app = Flask(__name__)
 app.secret_key = 'pisatindipay'
@@ -92,6 +92,17 @@ def generate_dataset(nbr):
             img_id += 1
             face = cv2.resize(face_cropped(img), (200, 200))
             face = cv2.cvtColor(face, cv2.COLOR_BGR2GRAY)
+
+            # Convert the image data to bytes
+            _, img_encoded = cv2.imencode('.jpg', face)
+            img_bytes = img_encoded.tobytes()
+
+            # Insert the image data into the database
+            mycursor.execute("""
+                INSERT INTO img_data (img_person, img_data)
+                VALUES (%s, %s)
+            """, (nbr, img_bytes))
+            cnx.commit()
 
             file_name_path = "dataset/" + nbr + "." + str(img_id) + ".jpg"
             cv2.imwrite(file_name_path, face)
