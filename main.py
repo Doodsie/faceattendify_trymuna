@@ -11,7 +11,6 @@ from datetime import date, datetime
 import re
 import gunicorn
 import io
-import vlc
 
 app = Flask(__name__)
 app.secret_key = 'pisatindipay'
