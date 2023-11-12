@@ -3,6 +3,7 @@ import json
 from flask import Flask, render_template, request, session, redirect, url_for, Response, jsonify, flash
 import mysql.connector
 import cv2
+from cv2 import face
 from PIL import Image
 import numpy as np
 import os
