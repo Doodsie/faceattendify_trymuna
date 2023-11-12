@@ -12,6 +12,7 @@ import re
 import gunicorn
 import io
 OPENCV_LOG_LEVEL=debug
+OPENCV_VIDEOIO_DEBUG=1
 
 app = Flask(__name__)
 app.secret_key = 'pisatindipay'
