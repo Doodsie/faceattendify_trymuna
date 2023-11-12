@@ -11,6 +11,7 @@ from datetime import date, datetime
 import re
 import gunicorn
 import io
+OPENCV_LOG_LEVEL=debug
 
 app = Flask(__name__)
 app.secret_key = 'pisatindipay'
