@@ -97,6 +97,8 @@ def generate_dataset(nbr):
                 break
                 cap.release()
                 cv2.destroyAllWindows()
+                mycursor.close()
+                cnx.close()
 
 
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Train Classifier >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
