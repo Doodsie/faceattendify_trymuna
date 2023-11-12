@@ -409,7 +409,6 @@ def face_recognition(group_id, attendancetime, attendanceduration, random_attend
 
     wCam, hCam = 400, 400
     cap = cv2.VideoCapture(0)
-    if cap.isOpened():
     cap.set(3, wCam)
     cap.set(4, hCam)
 
