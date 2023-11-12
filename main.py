@@ -48,7 +48,7 @@ def generate_dataset(nbr):
     cnx.commit()
 
     def face_cropped(img):
-        gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         faces = face_classifier.detectMultiScale(gray, 1.3, 5)
         # scaling factor=1.3
         # Minimum neighbor = 5
@@ -79,7 +79,7 @@ def generate_dataset(nbr):
             count_img += 1
             img_id += 1
             face = cv2.resize(face_cropped(img), (200, 200))
-            face = cv2.cvtColor(face, cv2.COLOR_RGB2GRAY)
+            face = cv2.cvtColor(face, cv2.COLOR_BGR2GRAY)
 
             file_name_path = "dataset/" + nbr + "." + str(img_id) + ".jpg"
             cv2.imwrite(file_name_path, face)
@@ -173,7 +173,7 @@ def has_completed_training(user_id):
 
 def face_show():
     def draw_boundary(img, classifier, scaleFactor, minNeighbors, color, text, clf):
-        gray_image = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+        gray_image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         features = classifier.detectMultiScale(gray_image, scaleFactor, minNeighbors)
 
         global justscanned
@@ -252,7 +252,7 @@ def face_recognition(group_id, attendancetime, attendanceduration, random_attend
         global last_face_detection_time
         global face_detected
 
-        gray_image = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+        gray_image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         features = classifier.detectMultiScale(gray_image, scaleFactor, minNeighbors)
 
         pause_cnt += 1
@@ -345,8 +345,8 @@ def face_recognition(group_id, attendancetime, attendanceduration, random_attend
         global face_detected
 
         roi = img[y:y + h, x:x + w]
-        hsv = cv2.cvtColor(roi, cv2.COLOR_RGB2HSV)
-        gray = cv2.cvtColor(roi, cv2.COLOR_RGB2GRAY)
+        hsv = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
+        gray = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
 
         # Define a region of interest for the face
         roi_hsv = hsv[int(0.1 * h):int(0.9 * h), int(0.1 * w):int(0.9 * w)]
