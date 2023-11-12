@@ -83,6 +83,10 @@ def generate_dataset(nbr):
 
     while True:
         ret, img = cap.read()
+        if not ret:
+            print("Error: Couldn't capture image from webcam.")
+            break
+            
         if face_cropped(img) is None:
             frame1 = cv2.resize(img, (200, 200))
             frame1 = cv2.imencode('.jpg', frame1)[1].tobytes()
