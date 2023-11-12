@@ -8,7 +8,6 @@ Jinja2
 MarkupSafe
 mysql-connector
 numpy
-opencv-contrib-python-headless==4.8.1.78
 Pillow
 Werkzeug
 mysql-connector-python
