@@ -37,7 +37,6 @@ def generate_dataset(nbr):
     data1 = mycursor.fetchall()
     for item in data1:
         imagePath = "dataset/" + nbr + "." + str(item[0]) + ".jpg"
-        #print(imagePath)
         try:
             os.remove(imagePath)
         except:
@@ -46,15 +45,18 @@ def generate_dataset(nbr):
     cnx.commit()
 
     def face_cropped(img):
+        if img is None:
+            return None
+        
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         faces = face_classifier.detectMultiScale(gray, 1.3, 5)
-        # scaling factor=1.3
-        # Minimum neighbor = 5
 
         if len(faces) == 0:
             return None
-        for (x, y, w, h) in faces:
-            cropped_face = img[y:y + h, x:x + w]
+
+        # If there are multiple faces detected, you might want to modify the code to handle that case.
+        (x, y, w, h) = faces[0]
+        cropped_face = img[y:y + h, x:x + w]
         return cropped_face
 
     cap = cv2.VideoCapture(0)
@@ -69,14 +71,12 @@ def generate_dataset(nbr):
 
     while True:
         ret, img = cap.read()
-        if face_cropped(img) is None:
-            frame1 = cv2.resize(img, (200, 200))
-            frame1 = cv2.imencode('.jpg', frame1)[1].tobytes()
-            yield (b'--frame1\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame1 + b'\r\n')
-        if face_cropped(img) is not None:
+
+        cropped_face = face_cropped(img)
+        if cropped_face is not None:
             count_img += 1
             img_id += 1
-            face = cv2.resize(face_cropped(img), (200, 200))
+            face = cv2.resize(cropped_face, (200, 200))
             face = cv2.cvtColor(face, cv2.COLOR_BGR2GRAY)
 
             file_name_path = "dataset/" + nbr + "." + str(img_id) + ".jpg"
@@ -86,17 +86,19 @@ def generate_dataset(nbr):
             mycursor.execute("""INSERT INTO `img_dataset` (`img_id`, `img_person`) VALUES
                                 ('{}', '{}')""".format(img_id, nbr))
             cnx.commit()
+
             if int(img_id) == int(max_imgid):
-                if int(img_id) == int(max_imgid):
-                    cv2.putText(face, "Training Complete", (5, 30), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
-                    cv2.putText(face, "Click Train Face.", (5, 45), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
+                cv2.putText(face, "Training Complete", (5, 30), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
+                cv2.putText(face, "Click Train Face.", (5, 45), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
+
             frame = cv2.imencode('.jpg', face)[1].tobytes()
             yield (b'--frame1\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
             if cv2.waitKey(1) == 13 or int(img_id) == int(max_imgid):
                 break
-                cap.release()
-                cv2.destroyAllWindows()
+
+    cap.release()
+    cv2.destroyAllWindows()
 
 
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Train Classifier >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
