@@ -30,17 +30,6 @@ config = {
 cnx = mysql.connector.connect(**config)
 mycursor = cnx.cursor(buffered=True)
 
-# Create a new table for image data
-mycursor.execute("""
-    CREATE TABLE IF NOT EXISTS img_data (
-        img_id INT AUTO_INCREMENT PRIMARY KEY,
-        img_person INT,
-        img_data LONGBLOB,
-        FOREIGN KEY (img_person) REFERENCES users(id)
-    )
-""")
-cnx.commit()
-
 
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Generate dataset >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 def generate_dataset(nbr):
@@ -50,6 +39,7 @@ def generate_dataset(nbr):
     data1 = mycursor.fetchall()
     for item in data1:
         imagePath = "dataset/" + nbr + "." + str(item[0]) + ".jpg"
+        # print(imagePath)
         try:
             os.remove(imagePath)
         except:
@@ -60,6 +50,8 @@ def generate_dataset(nbr):
     def face_cropped(img):
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         faces = face_classifier.detectMultiScale(gray, 1.3, 5)
+        # scaling factor=1.3
+        # Minimum neighbor = 5
 
         if len(faces) == 0:
             return None
@@ -67,66 +59,46 @@ def generate_dataset(nbr):
             cropped_face = img[y:y + h, x:x + w]
         return cropped_face
 
-    def generate_frames():
-        cap = cv2.VideoCapture(0)
-        time.sleep(0.5)
+    cap = cv2.VideoCapture(0)
 
-        mycursor.execute("select ifnull(max(img_id), 0) from img_dataset")
-        row = mycursor.fetchone()
-        lastid = row[0]
+    mycursor.execute("select ifnull(max(img_id), 0) from img_dataset")
+    row = mycursor.fetchone()
+    lastid = row[0]
 
-        img_id = lastid
-        max_imgid = img_id + 100
-        count_img = 0
+    img_id = lastid
+    max_imgid = img_id + 100
+    count_img = 0
 
-        while True:
-            ret, img = cap.read()
-            if not ret:
-                print("Error: Couldn't capture image from webcam.")
-                break
+    while True:
+        ret, img = cap.read()
+        if face_cropped(img) is None:
+            frame1 = cv2.resize(img, (200, 200))
+            frame1 = cv2.imencode('.jpg', frame1)[1].tobytes()
+            yield (b'--frame1\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame1 + b'\r\n')
+        if face_cropped(img) is not None:
+            count_img += 1
+            img_id += 1
+            face = cv2.resize(face_cropped(img), (200, 200))
+            face = cv2.cvtColor(face, cv2.COLOR_BGR2GRAY)
 
-            if face_cropped(img) is None:
-                frame1 = cv2.resize(img, (200, 200))
-                frame1 = cv2.imencode('.jpg', frame1)[1].tobytes()
-                yield (b'--frame1\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame1 + b'\r\n')
-            if face_cropped(img) is not None:
-                count_img += 1
-                img_id += 1
-                face = cv2.resize(face_cropped(img), (200, 200))
-                face = cv2.cvtColor(face, cv2.COLOR_BGR2GRAY)
+            file_name_path = "dataset/" + nbr + "." + str(img_id) + ".jpg"
+            cv2.imwrite(file_name_path, face)
+            cv2.putText(face, str(count_img) + '%', (5, 15), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
 
-                _, img_encoded = cv2.imencode('.jpg', face)
-                img_bytes = img_encoded.tobytes()
-
-                mycursor.execute("""
-                    INSERT INTO img_data (img_person, img_data)
-                    VALUES (%s, %s)
-                """, (nbr, img_bytes))
-                cnx.commit()
-
-                file_name_path = "dataset/" + nbr + "." + str(img_id) + ".jpg"
-                cv2.imwrite(file_name_path, face)
-                cv2.putText(face, str(count_img) + '%', (5, 15), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
-
-                mycursor.execute("""INSERT INTO `img_dataset` (`img_id`, `img_person`) VALUES
-                                    ('{}', '{}')""".format(img_id, nbr))
-                cnx.commit()
-
+            mycursor.execute("""INSERT INTO `img_dataset` (`img_id`, `img_person`) VALUES
+                                ('{}', '{}')""".format(img_id, nbr))
+            cnx.commit()
+            if int(img_id) == int(max_imgid):
                 if int(img_id) == int(max_imgid):
                     cv2.putText(face, "Training Complete", (5, 30), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
                     cv2.putText(face, "Click Train Face.", (5, 45), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
+            frame = cv2.imencode('.jpg', face)[1].tobytes()
+            yield (b'--frame1\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
-                frame = cv2.imencode('.jpg', face)[1].tobytes()
-                yield (b'--frame1\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-
-                if cv2.waitKey(1) == 13 or int(img_id) == int(max_imgid):
-                    break
-
-        cap.release()
-        cv2.destroyAllWindows()
-
-    # This is the modified part to use Flask's Response for streaming
-    return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame1')
+            if cv2.waitKey(1) == 13 or int(img_id) == int(max_imgid):
+                break
+                cap.release()
+                cv2.destroyAllWindows()
 
 
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Train Classifier >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -248,11 +220,8 @@ def face_show():
     clf.read("classifier.xml")
 
     wCam, hCam = 400, 400
-    
-    cap = cv2.VideoCapture(0)
-    time.sleep(0.5)
 
-    
+    cap = cv2.VideoCapture(0)
     cap.set(3, wCam)
     cap.set(4, hCam)
 
@@ -410,9 +379,8 @@ def face_recognition(group_id, attendancetime, attendanceduration, random_attend
     clf.read("classifier.xml")
 
     wCam, hCam = 400, 400
-    cap = cv2.VideoCapture(0)
-    time.sleep(0.5)
 
+    cap = cv2.VideoCapture(0)
     cap.set(3, wCam)
     cap.set(4, hCam)
 
@@ -440,7 +408,6 @@ def cnt_increment():
 def cnt_reset():
     global cnt
     cnt = 0
-
 
 
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< END Face Recognition >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
