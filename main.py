@@ -72,6 +72,8 @@ def generate_dataset(nbr):
         return cropped_face
         
     cap = cv2.VideoCapture(0)
+    time.sleep(0.5)
+
     
     mycursor.execute("select ifnull(max(img_id), 0) from img_dataset")
     row = mycursor.fetchone()
@@ -249,6 +251,8 @@ def face_show():
     wCam, hCam = 400, 400
     
     cap = cv2.VideoCapture(0)
+    time.sleep(0.5)
+
     
     cap.set(3, wCam)
     cap.set(4, hCam)
@@ -408,6 +412,8 @@ def face_recognition(group_id, attendancetime, attendanceduration, random_attend
 
     wCam, hCam = 400, 400
     cap = cv2.VideoCapture(0)
+    time.sleep(0.5)
+
     cap.set(3, wCam)
     cap.set(4, hCam)
 
