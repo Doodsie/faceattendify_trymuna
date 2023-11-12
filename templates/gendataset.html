@@ -86,17 +86,6 @@
 
 {% include "footer.html" %}
 <script>
-    window.onload = function() {
-        const imgElement = document.getElementById('addfaceimg');
-
-        navigator.mediaDevices.getUserMedia({ video: true })
-            .then(stream => {
-                imgElement.srcObject = stream;
-            })
-            .catch(error => console.error('Error accessing camera:', error));
-    };
-</script>
-<script>
 $('.header_nav').removeClass('active');
 $('.vfdataset_page').addClass('active');
 $('#header_page_title').html('Face Registration');
