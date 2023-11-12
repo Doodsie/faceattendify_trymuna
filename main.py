@@ -30,7 +30,36 @@ cnx = mysql.connector.connect(**config)
 mycursor = cnx.cursor(buffered=True)
 
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Generate dataset >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-   mycursor.execute("select ifnull(max(img_id), 0) from img_dataset")
+def generate_dataset(nbr):
+    face_classifier = cv2.CascadeClassifier("resources/haarcascade_frontalface_default.xml")
+
+    mycursor.execute("select * from img_dataset WHERE img_person='" + str(nbr) + "'")
+    data1 = mycursor.fetchall()
+    for item in data1:
+        imagePath = "dataset/" + nbr + "." + str(item[0]) + ".jpg"
+        # print(imagePath)
+        try:
+            os.remove(imagePath)
+        except:
+            pass
+    mycursor.execute("delete from img_dataset WHERE img_person='" + str(nbr) + "'")
+    cnx.commit()
+
+    def face_cropped(img):
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        faces = face_classifier.detectMultiScale(gray, 1.3, 5)
+        # scaling factor=1.3
+        # Minimum neighbor = 5
+
+        if len(faces) == 0:
+            return None
+        for (x, y, w, h) in faces:
+            cropped_face = img[y:y + h, x:x + w]
+        return cropped_face
+
+    cap = cv2.VideoCapture(1)
+
+    mycursor.execute("select ifnull(max(img_id), 0) from img_dataset")
     row = mycursor.fetchone()
     lastid = row[0]
 
@@ -41,9 +70,9 @@ mycursor = cnx.cursor(buffered=True)
     while True:
         ret, img = cap.read()
         if face_cropped(img) is None:
-           frame1 = cv2.resize(img, (200, 200))
-           frame1 = cv2.imencode('.jpg', frame1)[1].tobytes()
-           yield (b'--frame1\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame1 + b'\r\n')
+            frame1 = cv2.resize(img, (200, 200))
+            frame1 = cv2.imencode('.jpg', frame1)[1].tobytes()
+            yield (b'--frame1\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame1 + b'\r\n')
         if face_cropped(img) is not None:
             count_img += 1
             img_id += 1
@@ -52,15 +81,15 @@ mycursor = cnx.cursor(buffered=True)
 
             file_name_path = "dataset/" + nbr + "." + str(img_id) + ".jpg"
             cv2.imwrite(file_name_path, face)
-            cv2.putText(face, str(count_img), (5, 15), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
+            cv2.putText(face, str(count_img) + '%', (5, 15), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
 
             mycursor.execute("""INSERT INTO `img_dataset` (`img_id`, `img_person`) VALUES
                                 ('{}', '{}')""".format(img_id, nbr))
-            mydb.commit()
+            cnx.commit()
             if int(img_id) == int(max_imgid):
-                cv2.putText(face, "Done.", (5, 30), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
-                cv2.putText(face, "Click on training btn.", (5, 45), cv2.FONT_HERSHEY_COMPLEX, 0.5,
-                            (255, 255, 255), 1)
+                if int(img_id) == int(max_imgid):
+                    cv2.putText(face, "Training Complete", (5, 30), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
+                    cv2.putText(face, "Click Train Face.", (5, 45), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
             frame = cv2.imencode('.jpg', face)[1].tobytes()
             yield (b'--frame1\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
@@ -74,7 +103,7 @@ mycursor = cnx.cursor(buffered=True)
 @app.route('/train_classifier/<nbr>')
 def train_classifier(nbr):
     user_id = session.get('user_id')  # Get the user's ID from the session
-    #dataset_dir = "C:/Users/jd/PycharmProjects/FlaskOpencv_FaceRecognition/dataset"
+    # dataset_dir = "C:/Users/jd/PycharmProjects/FlaskOpencv_FaceRecognition/dataset"
     if not has_completed_training(user_id):
         img_count = get_image_count(user_id)  # Get the image count for the user
 
@@ -112,17 +141,21 @@ def train_classifier(nbr):
 
     return redirect('/vfdataset_page')
 
+
 def get_image_count(user_id):
     # Assuming you have a database table named img_dataset with user_id field
     mycursor.execute("SELECT COUNT(*) FROM img_dataset WHERE img_person = %s", (user_id,))
     row = mycursor.fetchone()
     count = row[0] if row else 0
     return count
+
+
 @app.route('/gendataset')
 def gendataset():
     user_id = session['user_id']
     user_completed_process = has_completed_training(user_id)
     return render_template('gendataset.html', user_completed_process=user_completed_process)
+
 
 def has_completed_training(user_id):
     # Implement your logic to check if the user has completed training
@@ -134,6 +167,7 @@ def has_completed_training(user_id):
         return True
     else:
         return False
+
 
 def face_show():
     def draw_boundary(img, classifier, scaleFactor, minNeighbors, color, text, clf):
@@ -160,8 +194,8 @@ def face_show():
                 # w_filled = (n / 100) * w
                 w_filled = (cnt / 30) * w
 
-                #cv2.rectangle(img, (x, y + h + 40), (x + w, y + h + 50), color, 2)
-                #cv2.rectangle(img, (x, y + h + 40), (x + int(w_filled), y + h + 50), (153, 255, 255), cv2.FILLED)
+                # cv2.rectangle(img, (x, y + h + 40), (x + w, y + h + 50), color, 2)
+                # cv2.rectangle(img, (x, y + h + 40), (x + int(w_filled), y + h + 50), (153, 255, 255), cv2.FILLED)
 
             else:
                 if not justscanned:
@@ -204,8 +238,10 @@ def face_show():
 
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Face Recognition >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # Global variables for liveness detection
+# Global variables for liveness detection
 last_face_detection_time = time.time()
 face_detected = False
+
 
 def face_recognition(group_id, attendancetime, attendanceduration, random_attendance_id, user_id):
     def draw_boundary(img, classifier, scaleFactor, minNeighbors, color, text, clf):
@@ -245,7 +281,9 @@ def face_recognition(group_id, attendancetime, attendanceduration, random_attend
 
                             mycursor.execute("select count(*) "
                                              "  from accs_hist "
-                                             " where accs_date = curdate() AND group_id = '" + str(group_id) + "' AND accs_prsn = '" + pnbr + "' AND random_attendance_id = '" + str(random_attendance_id) + "'")
+                                             " where accs_date = curdate() AND group_id = '" + str(
+                                group_id) + "' AND accs_prsn = '" + pnbr + "' AND random_attendance_id = '" + str(
+                                random_attendance_id) + "'")
                             row = mycursor.fetchone()
                             rowcount = row[0]
 
@@ -255,12 +293,15 @@ def face_recognition(group_id, attendancetime, attendanceduration, random_attend
                                 justscanned = True
                                 pause_cnt = 0
                             else:
-                                cv2.putText(img, pname, (x - 10, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (153, 255, 255), 2,
+                                cv2.putText(img, pname, (x - 10, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.8,
+                                            (153, 255, 255), 2,
                                             cv2.LINE_AA)
 
-                                mycursor.execute("insert into accs_hist (accs_date, accs_prsn, group_id, accs_added, random_attendance_id) values('" + str(
-                                    date.today()) + "', '" + pnbr + "', '" + str(group_id) + "', '" + str(atime) + "', '" + str(
-                                    random_attendance_id) + "')")
+                                mycursor.execute(
+                                    "insert into accs_hist (accs_date, accs_prsn, group_id, accs_added, random_attendance_id) values('" + str(
+                                        date.today()) + "', '" + pnbr + "', '" + str(group_id) + "', '" + str(
+                                        atime) + "', '" + str(
+                                        random_attendance_id) + "')")
                                 cnx.commit()
 
                                 time.sleep(1)
@@ -268,12 +309,14 @@ def face_recognition(group_id, attendancetime, attendanceduration, random_attend
                                 justscanned = True
                                 pause_cnt = 0
                         else:
-                            cv2.putText(img, 'UNKNOWN', (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2, cv2.LINE_AA)
+                            cv2.putText(img, 'UNKNOWN', (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2,
+                                        cv2.LINE_AA)
                     else:
                         justscanned = False
                 else:
                     if not justscanned:
-                        cv2.putText(img, 'Spoofing', (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2, cv2.LINE_AA)
+                        cv2.putText(img, 'Spoofing', (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2,
+                                    cv2.LINE_AA)
                     else:
                         cv2.putText(img, 'Present', (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.6,
                                     (0, 0, 255), 2, cv2.LINE_AA)
@@ -299,7 +342,7 @@ def face_recognition(group_id, attendancetime, attendanceduration, random_attend
         global last_face_detection_time
         global face_detected
 
-        roi = img[y:y+h, x:x+w]
+        roi = img[y:y + h, x:x + w]
         hsv = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
         gray = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
 
@@ -335,7 +378,7 @@ def face_recognition(group_id, attendancetime, attendanceduration, random_attend
 
     wCam, hCam = 400, 400
 
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(0)
     cap.set(3, wCam)
     cap.set(4, hCam)
 
@@ -354,13 +397,17 @@ def face_recognition(group_id, attendancetime, attendanceduration, random_attend
     cap.release()
     cv2.destroyAllWindows()
 
+
 def cnt_increment():
     global cnt
     cnt += 1
 
+
 def cnt_reset():
     global cnt
     cnt = 0
+
+
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< END Face Recognition >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 
