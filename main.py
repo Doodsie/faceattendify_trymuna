@@ -41,9 +41,6 @@ mycursor.execute("""
 """)
 cnx.commit()
 
-os.environ['OPENCV_VIDEOIO_PRIORITY_MSMF'] = '0'
-os.environ['OPENCV_LOG_LEVEL'] = 'debug'
-
 
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Generate dataset >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 def generate_dataset(nbr):
@@ -252,7 +249,7 @@ def face_show():
 
     wCam, hCam = 400, 400
     
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(0)
     time.sleep(0.5)
 
     
@@ -413,7 +410,7 @@ def face_recognition(group_id, attendancetime, attendanceduration, random_attend
     clf.read("classifier.xml")
 
     wCam, hCam = 400, 400
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(0)
     time.sleep(0.5)
 
     cap.set(3, wCam)
