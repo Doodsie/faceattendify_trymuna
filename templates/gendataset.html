@@ -86,32 +86,11 @@
 
 {% include "footer.html" %}
 <script>
-        const videoElement = document.createElement('video');
-        document.body.appendChild(videoElement);
-
-        const canvasElement = document.getElementById('canvas');
-        const ctx = canvasElement.getContext('2d');
         const imgElement = document.getElementById('addfaceimg');
 
         navigator.mediaDevices.getUserMedia({ video: true })
             .then(stream => {
-                videoElement.srcObject = stream;
-                return new Promise(resolve => videoElement.onloadedmetadata = resolve);
-            })
-            .then(() => {
-                canvasElement.width = videoElement.videoWidth;
-                canvasElement.height = videoElement.videoHeight;
-
-                function captureFrame() {
-                    ctx.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
-                    imgElement.src = canvasElement.toDataURL('image/jpeg');
-
-                    // You can perform additional actions with the captured frame here
-
-                    requestAnimationFrame(captureFrame);
-                }
-
-                captureFrame();
+                imgElement.srcObject = stream;
             })
             .catch(error => console.error('Error accessing camera:', error));
     </script>
