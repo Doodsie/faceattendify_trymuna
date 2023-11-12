@@ -11,8 +11,7 @@ from datetime import date, datetime
 import re
 import gunicorn
 import io
-OPENCV_LOG_LEVEL=debug
-OPENCV_VIDEOIO_DEBUG=1
+
 
 app = Flask(__name__)
 app.secret_key = 'pisatindipay'
@@ -42,7 +41,8 @@ mycursor.execute("""
 """)
 cnx.commit()
 
-os.environ['OPENCV_VIDEOIO_PRIORITY_MSMF'] = '0'
+os.environ['OPENCV_VIDEOIO_PRIORITY_MSMF'] = '0']
+os.environ['OPENCV_LOG_LEVEL'] = 'debug'
 
 
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Generate dataset >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
