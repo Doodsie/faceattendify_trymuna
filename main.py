@@ -41,7 +41,7 @@ mycursor.execute("""
 """)
 cnx.commit()
 
-os.environ['OPENCV_VIDEOIO_PRIORITY_MSMF'] = '0']
+os.environ['OPENCV_VIDEOIO_PRIORITY_MSMF'] = '0'
 os.environ['OPENCV_LOG_LEVEL'] = 'debug'
 
 
