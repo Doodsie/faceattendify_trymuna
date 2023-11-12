@@ -68,7 +68,7 @@ def generate_dataset(nbr):
     img_id = lastid
     max_imgid = img_id + 100
     count_img = 0
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(1)
 
     while True:
         ret, img = cap.read()
@@ -367,7 +367,7 @@ def face_recognition(group_id, attendancetime, attendanceduration, random_attend
 
     wCam, hCam = 400, 400
 
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(1)
     cap.set(3, wCam)
     cap.set(4, hCam)
 
