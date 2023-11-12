@@ -250,7 +250,6 @@ def face_show():
     
     cap = cv2.VideoCapture(0)
     
-    if cap.isOpened():
     cap.set(3, wCam)
     cap.set(4, hCam)
 
