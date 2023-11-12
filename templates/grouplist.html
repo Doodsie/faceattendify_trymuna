@@ -74,7 +74,7 @@
                                                 <tr>
                                                     <td>{{ item[1] }}</td>
                                                     <td>{{ item[3] }}&nbsp;{{ item[4] }}</td>
-													<td><a class="btn btn-secondary" href='/grouplist?group_id={{ item[0] }}&action=view_members&groupteacher={{ item[3] }}&nbsp;{{ item[4] }}&groupname={{ item[1] }}'><b>View</b></a></td>
+													<td><a href='/grouplist?group_id={{ item[0] }}&action=view_members&groupteacher={{ item[3] }}&nbsp;{{ item[4] }}&groupname={{ item[1] }}'><b>View</b></a></td>
                                                     <td><a href='/join?group_id={{ item[0] }}' class="btn btn-primary">Join Meeting</a></td>
                                                     <td><a class="btn btn-danger" href='/grouplist?group_id={{ item[0] }}&rurl=grouplist&action=remove'  onclick="return confirm('Are you sure you want to leave this Course?')   "><b>Leave</b></a></td>
                                                 </tr>
