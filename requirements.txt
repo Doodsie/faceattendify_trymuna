@@ -12,4 +12,5 @@ opencv-contrib-python-headless
 Pillow
 Werkzeug
 mysql-connector-python
+vlc
 gevent
