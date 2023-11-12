@@ -670,8 +670,16 @@ def updateownprofile_submit():
             #return updateownprofile()
         else:
             photo = request.form['photo']
-
-        mycursor.execute("UPDATE users SET first_name='" + str(first_name) + "',last_name='" + str(last_name) + "',email='" + str(email) + "',phone='" + str(phone) + "', photo='" + str(photo) + "', dob='" + str(dob) + "', i_d='" + str(i_d) + "' WHERE id='" + str(userlist_id) + "'")
+            
+        query = (
+            "UPDATE users SET "
+            "first_name=%s, last_name=%s, email=%s, phone=%s, photo=%s, dob=%s, i_d=%s "
+            "WHERE id=%s"
+        )
+        
+        values = (first_name, last_name, email, phone, photo, dob, i_d, userlist_id)
+        
+        mycursor.execute(query, values)
         cnx.commit()
 
     #return render_template("updateownprofile.html")
