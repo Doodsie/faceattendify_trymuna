@@ -702,9 +702,11 @@ def updateownprofile():
 #app.config["IMAGE_UPLOADS"] = "C:/Users/raja/PycharmProjects/FlaskOpencv_FaceRecognition/static/user_photo/"
 app.config["IMAGE_UPLOADS"] = "static/user_photo"
 
+
 @app.route('/updateownprofile', methods=['GET', 'POST'])
 def updateownprofile_submit():
     if request.method == "POST":
+        # Retrieve form data
         first_name = request.form['first_name']
         last_name = request.form['last_name']
         email = request.form['email']
@@ -713,31 +715,44 @@ def updateownprofile_submit():
         i_d = request.form['i_d']
         userlist_id = session['user_id']
         photo = request.form['photo']
+
+        # Handle file upload
         if request.files:
             image = request.files["fileToUpload"]
-            if image.filename != '' and image.filename != None:
-               image.filename = first_name + "-" + image.filename
-               image.save(os.path.join(app.config["IMAGE_UPLOADS"], image.filename))
-               photo = image.filename
-               session['user_photo'] = photo
-            #return render_template("updateownprofile.html", uploaded_image=image.filename)
-            #return updateownprofile()
-        else:
-            photo = request.form['photo']
-            
-        query = (
-            "UPDATE users SET "
-            "first_name=%s, last_name=%s, email=%s, phone=%s, photo=%s, dob=%s, i_d=%s "
-            "WHERE id=%s"
-        )
-        
-        values = (first_name, last_name, email, phone, photo, dob, i_d, userlist_id)
-        
-        mycursor.execute(query, values)
-        cnx.commit()
+            if image.filename != '' and image.filename is not None:
+                image.filename = first_name + "-" + image.filename
+                image.save(os.path.join(app.config["IMAGE_UPLOADS"], image.filename))
+                photo = image.filename
+                session['user_photo'] = photo
 
-    #return render_template("updateownprofile.html")
-    return updateownprofile()
+        # Check if dob is not empty before trying to convert it
+        if dob:
+            try:
+                # Convert the string to a datetime object
+                dob_datetime = datetime.strptime(dob, "%Y-%m-%d")
+
+                # Convert the datetime object back to a string in the desired format
+                formatted_dob = dob_datetime.strftime("%Y-%m-%d")
+            except ValueError:
+                # Handle the case where the date is not in the expected format
+                # You might want to add validation or notify the user about the incorrect date format
+                return render_template('your_error_template.html', error_message='Invalid date format')
+
+            # Continue with the database update using 'formatted_dob' for the date field
+            query = (
+                "UPDATE users SET "
+                "first_name=%s, last_name=%s, email=%s, phone=%s, photo=%s, dob=%s, i_d=%s "
+                "WHERE id=%s"
+            )
+            values = (first_name, last_name, email, phone, photo, formatted_dob, i_d, userlist_id)
+            mycursor.execute(query, values)
+            cnx.commit()
+
+        # Handle other cases as needed
+
+    # Redirect to the updateownprofile endpoint to display the updated profile
+    return redirect(url_for('updateownprofile'))
+
 
 @app.route('/userlist')
 def userlist():
