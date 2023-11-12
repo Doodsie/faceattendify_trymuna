@@ -73,7 +73,7 @@ def generate_dataset(nbr):
             cropped_face = img[y:y + h, x:x + w]
         return cropped_face
         
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture('HDR webcam')
     time.sleep(0.5)
 
     
@@ -252,7 +252,7 @@ def face_show():
 
     wCam, hCam = 400, 400
     
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture('HDR webcam')
     time.sleep(0.5)
 
     
@@ -413,7 +413,7 @@ def face_recognition(group_id, attendancetime, attendanceduration, random_attend
     clf.read("classifier.xml")
 
     wCam, hCam = 400, 400
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture('HDR webcam')
     time.sleep(0.5)
 
     cap.set(3, wCam)
