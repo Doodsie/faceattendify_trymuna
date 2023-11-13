@@ -8,7 +8,6 @@ import os
 import time
 from datetime import date, datetime
 import re
-asd
 
 
 app = Flask(__name__)
