@@ -692,15 +692,10 @@ def updateownprofile_submit():
         else:
             photo = request.form['photo']
 
-        query = (
-            "UPDATE users SET "
-            "first_name=%s, last_name=%s, email=%s, phone=%s, photo=%s, dob=%s, i_d=%s "
-            "WHERE id=%s"
-        )
-
-        values = (first_name, last_name, email, phone, photo, dob, i_d, userlist_id)
-
-        mycursor.execute(query, values)
+        mycursor.execute(
+            "UPDATE users SET first_name='" + str(first_name) + "',last_name='" + str(last_name) + "',email='" + str(
+                email) + "',phone='" + str(phone) + "', photo='" + str(photo) + "', dob='" + str(
+                dob) + "', i_d='" + str(i_d) + "' WHERE id='" + str(userlist_id) + "'")
         cnx.commit()
 
     # return render_template("updateownprofile.html")
@@ -954,7 +949,9 @@ def teachersignup_submit():
             elif not re.match(r'[A-Za-z0-9]+', first_name):
                 flash('First Name must contain only characters and numbers !', 'danger')
             elif not re.match(password_pattern, password):
-                flash('Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one special character (@, #, $, %, ^, &, +, =, !).','danger')
+                flash(
+                    'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one special character (@, #, $, %, ^, &, +, =, !).',
+                    'danger')
             elif not first_name or not password or not email:
                 flash('Please fill out the form !', 'danger')
             else:
