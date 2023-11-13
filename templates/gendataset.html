@@ -91,36 +91,57 @@ $('.vfdataset_page').addClass('active');
 $('#header_page_title').html('Face Registration');
 
      function startDataset() {
-        $('#addfaceimg').attr('src', '{{ url_for('vidfeed_dataset', nbr=prs) }}');
-        $('#addfaceimg').show();
-        $('#addfacestart').hide();
-        $('#addfacestop').show();
-        $('#training').show(); // Use the updated ID here
-    }
+            // Check for WebRTC support
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ video: true })
+                    .then(function (stream) {
+                        // Attach the stream to the video element
+                        var videoElement = document.getElementById('addfaceimg');
+                        videoElement.srcObject = stream;
+                        videoElement.play();
+                    })
+                    .catch(function (error) {
+                        console.error('Error accessing camera:', error);
+                    });
+            } else {
+                console.error('WebRTC is not supported in this browser.');
+            }
 
-    function stopDataset() {
-        $('#addfaceimg').attr('src', '');
-        $('#addfaceimg').hide();
-        $('#addfacestart').show();
-       $('#training').show(); // Use the updated ID here
-    }
+            $('#addfaceimg').show();
+            $('#addfacestart').hide();
+            $('#addfacestop').show();
+            $('#training').show();
+        }
 
-    // Handle the click event of the Train Face button
-    $('#training').click(function (event) {
-        event.preventDefault(); // Prevent the default action
-        // Display the confirmation modal
-        $('#confirmationModal').css('display', 'block');
-    });
+        function stopDataset() {
+            var videoElement = document.getElementById('addfaceimg');
+            if (videoElement.srcObject) {
+                // Stop the video stream
+                var tracks = videoElement.srcObject.getTracks();
+                tracks.forEach(track => track.stop());
+            }
 
-    // Close the modal and prevent default action when "Cancel" is clicked
-    $('#cancelButton').click(function () {
-        $('#confirmationModal').css('display', 'none');
-    });
+            $('#addfaceimg').attr('src', '');
+            $('#addfaceimg').hide();
+            $('#addfacestart').show();
+            $('#addfacestop').hide();
+            $('#training').show();
+        }
 
-    // Proceed with the action when "OK" is clicked
-    $('#okButton').click(function () {
-        $('#confirmationModal').css('display', 'none');
-        // Navigate to the URL
-        window.location.href = "{{ url_for('train_classifier', nbr=prs) }}";
-    });
+        // Handle the click event of the Train Face button
+        $('#training').click(function (event) {
+            event.preventDefault();
+            $('#confirmationModal').css('display', 'block');
+        });
+
+        // Close the modal and prevent default action when "Cancel" is clicked
+        $('#cancelButton').click(function () {
+            $('#confirmationModal').css('display', 'none');
+        });
+
+        // Proceed with the action when "OK" is clicked
+        $('#okButton').click(function () {
+            $('#confirmationModal').css('display', 'none');
+            window.location.href = "{{ url_for('train_classifier', nbr=prs) }}";
+        });
 </script>
