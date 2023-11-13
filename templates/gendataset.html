@@ -55,6 +55,7 @@
         </div>
     </div>
     <div class="row mt-5">
+        <video width="25%" height="25%" class="img-thumbnail1" id="addfacevideo" autoplay playsinline muted></video>
         <div class="col-md-3-lg-2 mx-auto text-center">
             <!--h3>Generate Dataset {{ prs }}</h3-->
             <h3><b>Generate Face</b></h3>
@@ -90,37 +91,69 @@ $('.header_nav').removeClass('active');
 $('.vfdataset_page').addClass('active');
 $('#header_page_title').html('Face Registration');
 
-     function startDataset() {
-        $('#addfaceimg').attr('src', '{{ url_for('vidfeed_dataset', nbr=prs) }}');
-        $('#addfaceimg').show();
-        $('#addfacestart').hide();
-        $('#addfacestop').show();
-        $('#training').show(); // Use the updated ID here
-    }
+     var videoElement = document.getElementById('addfacevideo');
+        var imgElement = document.getElementById('addfaceimg');
 
-    function stopDataset() {
-        $('#addfaceimg').attr('src', '');
-        $('#addfaceimg').hide();
-        $('#addfacestart').show();
-       $('#training').show(); // Use the updated ID here
-    }
+        function startDataset() {
+            // Check for WebRTC support
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ video: true })
+                    .then(function (stream) {
+                        // Attach the stream to the video element
+                        videoElement.srcObject = stream;
+                    })
+                    .catch(function (error) {
+                        console.error('Error accessing camera:', error);
+                    });
+            } else {
+                console.error('WebRTC is not supported in this browser.');
+            }
 
-    // Handle the click event of the Train Face button
-    $('#training').click(function (event) {
-        event.preventDefault(); // Prevent the default action
-        // Display the confirmation modal
-        $('#confirmationModal').css('display', 'block');
-    });
+            $('#addfacevideo').show();
+            $('#addfaceimg').hide();
+            $('#addfacestart').hide();
+            $('#addfacestop').show();
+            $('#training').show();
+        }
 
-    // Close the modal and prevent default action when "Cancel" is clicked
-    $('#cancelButton').click(function () {
-        $('#confirmationModal').css('display', 'none');
-    });
+        function stopDataset() {
+            if (videoElement.srcObject) {
+                // Stop the video stream
+                var tracks = videoElement.srcObject.getTracks();
+                tracks.forEach(track => track.stop());
+            }
 
-    // Proceed with the action when "OK" is clicked
-    $('#okButton').click(function () {
-        $('#confirmationModal').css('display', 'none');
-        // Navigate to the URL
-        window.location.href = "{{ url_for('train_classifier', nbr=prs) }}";
-    });
+            // Capture a frame from the video stream and display it in the image element
+            var canvas = document.createElement('canvas');
+            canvas.width = videoElement.videoWidth;
+            canvas.height = videoElement.videoHeight;
+            var context = canvas.getContext('2d');
+            context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+            var capturedImageDataUrl = canvas.toDataURL('image/png');
+            imgElement.src = capturedImageDataUrl;
+
+            $('#addfacevideo').hide();
+            $('#addfaceimg').show();
+            $('#addfacestart').show();
+            $('#addfacestop').hide();
+            $('#training').show();
+        }
+
+        // Handle the click event of the Train Face button
+        $('#training').click(function (event) {
+            event.preventDefault();
+            $('#confirmationModal').css('display', 'block');
+        });
+
+        // Close the modal and prevent default action when "Cancel" is clicked
+        $('#cancelButton').click(function () {
+            $('#confirmationModal').css('display', 'none');
+        });
+
+        // Proceed with the action when "OK" is clicked
+        $('#okButton').click(function () {
+            $('#confirmationModal').css('display', 'none');
+            window.location.href = "{{ url_for('train_classifier', nbr=prs) }}";
+        });
+    </script>
 </script>
