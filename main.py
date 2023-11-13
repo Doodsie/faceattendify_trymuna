@@ -1,5 +1,4 @@
 import json
-
 from flask import Flask, render_template, request, session, redirect, url_for, Response, jsonify, flash
 import mysql.connector
 import cv2
@@ -9,8 +8,7 @@ import os
 import time
 from datetime import date, datetime
 import re
-import gunicorn
-import io
+
 
 
 app = Flask(__name__)
@@ -53,7 +51,7 @@ def generate_dataset(nbr):
         # scaling factor=1.3
         # Minimum neighbor = 5
 
-        if faces is ():
+        if len(faces) == 0:
             return None
         for (x, y, w, h) in faces:
             cropped_face = img[y:y + h, x:x + w]
@@ -425,7 +423,7 @@ def vfdataset_page():
 @app.route('/vidfeed_dataset/<nbr>')
 def vidfeed_dataset(nbr):
     # Video streaming route. Put this in the src attribute of an img tag
-    return generate_dataset(nbr)
+    return Response(generate_dataset(nbr), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
 @app.route('/video_feed', methods=['GET', 'POST'])
@@ -441,35 +439,39 @@ def video_feed():
     attendanceduration = row[2]
     user_id = session['user_id']
 
-    #attendancetime = session['attendancetime']
-    #attendanceduration = session['attendanceduration']
+    # attendancetime = session['attendancetime']
+    # attendanceduration = session['attendanceduration']
 
     # Video streaming route. Put this in the src attribute of an img tag
-    return Response(face_recognition(group_id, attendancetime, attendanceduration, random_attendance_id,user_id), mimetype='multipart/x-mixed-replace; boundary=frame')
+    return Response(face_recognition(group_id, attendancetime, attendanceduration, random_attendance_id, user_id),
+                    mimetype='multipart/x-mixed-replace; boundary=frame')
+
 
 @app.route('/video_show')
 def video_show():
     # Video streaming route. Put this in the src attribute of an img tag
     return Response(face_show(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
+
 @app.route('/fr_page', methods=['GET', 'POST'])
 def fr_page():
     """Video streaming home page."""
     user_id = session['user_id']
-    data=""
+    data = ""
 
     mycursor.execute("select a.accs_id, a.accs_prsn, b.first_name, b.last_name, a.accs_added "
                      "  from accs_hist a "
                      "  left join users b on a.accs_prsn = b.id "
                      " where a.accs_prsn = '" + str(user_id) + "' AND a.accs_date = curdate() "
-                     " order by 1 desc")
+                                                               " order by 1 desc")
     data = mycursor.fetchall()
 
     atdone = "no"
     random_attendance_id = session['random_attendance_id']
     mycursor.execute("select count(*) "
                      "  from accs_hist "
-                     " where accs_date = curdate() AND  accs_prsn = '" + str(user_id) + "' AND random_attendance_id = '" + str(random_attendance_id) + "'")
+                     " where accs_date = curdate() AND  accs_prsn = '" + str(
+        user_id) + "' AND random_attendance_id = '" + str(random_attendance_id) + "'")
     row = mycursor.fetchone()
     rowcount = row[0]
     if rowcount > 0:
@@ -487,91 +489,89 @@ def fr_page():
     if request.args.get('duration') != "" and request.args.get('duration') != None and request.args.get('duration') != "auto":
         session['attendanceduration'] = request.args.get('duration')
     '''
-    
+
     random_attendance_id = session['random_attendance_id']
     mycursor.execute("select a.group_id, a.random_time, a.duration "
                      "  from random_attendance a "
                      " where a.id = " + str(random_attendance_id))
     row = mycursor.fetchone()
-    #group_id = row[0]
-    #session['attendancetime'] = row[1]
+    # group_id = row[0]
+    # session['attendancetime'] = row[1]
     session['attendanceduration'] = row[2]
 
-    #session['random_attendance_id']="6"
+    # session['random_attendance_id']="6"
     return render_template('fr_page.html', data=data, data1=atdone)
 
 
 @app.route('/countTodayScan')
 def countTodayScan():
-  cnx = mysql.connector.connect(**config)
-  mycursor = cnx.cursor()
+    cnx = mysql.connector.connect(**config)
+    mycursor = cnx.cursor()
 
-  mycursor.execute("select count(*) "
-                   "  from accs_hist "
-                   " where accs_date = curdate() ")
-  row = mycursor.fetchone()
-  rowcount = row[0]
-  print(rowcount)
-  return jsonify({'rowcount': rowcount})
+    mycursor.execute("select count(*) "
+                     "  from accs_hist "
+                     " where accs_date = curdate() ")
+    row = mycursor.fetchone()
+    rowcount = row[0]
+    print(rowcount)
+    return jsonify({'rowcount': rowcount})
 
 
 @app.route('/loadData', methods=['GET', 'POST'])
 def loadData():
-  cnx = mysql.connector.connect(**config)
-  mycursor = cnx.cursor()
-  user_id = session['user_id']
+    cnx = mysql.connector.connect(**config)
+    mycursor = cnx.cursor()
+    user_id = session['user_id']
 
-  mycursor.execute("select a.accs_id, a.accs_prsn, b.first_name, b.last_name, date_format(a.accs_added, '%H:%i:%s') "
+    mycursor.execute("select a.accs_id, a.accs_prsn, b.first_name, b.last_name, date_format(a.accs_added, '%H:%i:%s') "
                      "  from accs_hist a "
                      "  left join users b on a.accs_prsn = b.id "
                      " where a.accs_date = curdate() and b.id = " + str(user_id) +
                      " order by 1 desc")
 
-  '''
-    mycursor.execute("select a.accs_id, a.accs_prsn, b.first_name, b.last_name, date_format(a.accs_added, '%H:%i:%s') "
-                     "  from accs_hist a "
-                     "  left join users b on a.accs_prsn = b.id "
-                     " where a.accs_date = curdate() "
-                     " order by 1 desc")
-  '''
-  data = mycursor.fetchall()
+    '''
+      mycursor.execute("select a.accs_id, a.accs_prsn, b.first_name, b.last_name, date_format(a.accs_added, '%H:%i:%s') "
+                       "  from accs_hist a "
+                       "  left join users b on a.accs_prsn = b.id "
+                       " where a.accs_date = curdate() "
+                       " order by 1 desc")
+    '''
+    data = mycursor.fetchall()
 
-  return jsonify(response=data)
+    return jsonify(response=data)
 
 
 @app.route('/')
 def add_login_view():
-  msg = ""
-  return render_template('login.html', msg=msg)
+    msg = ""
+    return render_template('login.html', msg=msg)
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login_submit():
-    cnx = mysql.connector.connect(**config)
-    mycursor = cnx.cursor(buffered=True)
-
     msg = ""
     if request.method == 'POST' and 'email' in request.form and 'password' in request.form:
         email = request.form['email']
         password = request.form['password']
-        #cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        #mycursor.execute('SELECT * FROM users WHERE email = % s AND password = % s', (email, password,))
+        # cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        # mycursor.execute('SELECT * FROM users WHERE email = % s AND password = % s', (email, password,))
         mycursor.execute("SELECT * FROM users WHERE email ='%s' AND password ='%s'" % (email, password))
         account = mycursor.fetchone()
         if account:
             if account[7] != 'teacher':
-                #if account[14] == 1:
-                  session['loggedin'] = True
-                  session['user_id'] = account[0]
-                  session['user_name'] = account[1] + ' ' + account[2]
-                  session['user_email'] = account[3]
-                  session['user_role'] = account[7]
-                  session['user_photo'] = account[13]
-                  session['random_attendance_id'] = '0'
-                  msg = "<div class='alert alert-success'>Successfully LogIn</div>"
-                  #return render_template('updateownprofile.html', msg=msg)
-                  return redirect(url_for('updateownprofile'))
-                #else:
-                    #msg = " Your account is not approved!"
+                # if account[14] == 1:
+                session['loggedin'] = True
+                session['user_id'] = account[0]
+                session['user_name'] = account[1] + ' ' + account[2]
+                session['user_email'] = account[3]
+                session['user_role'] = account[7]
+                session['user_photo'] = account[13]
+                session['random_attendance_id'] = '0'
+                msg = "<div class='alert alert-success'>Successfully LogIn</div>"
+                # return render_template('updateownprofile.html', msg=msg)
+                return redirect(url_for('updateownprofile'))
+            # else:
+            # msg = " Your account is not approved!"
             elif account[7] != 'admin':
                 # if account[14] == 1:
                 session['loggedin'] = True
@@ -594,7 +594,7 @@ def login_submit():
                 session['user_role'] = account[7]
                 session['user_photo'] = account[13]
                 msg = "Successfully LogIn"
-                #return render_template('updateownprofile.html', msg=msg)
+                # return render_template('updateownprofile.html', msg=msg)
                 return redirect(url_for('updateownprofile'))
         else:
             flash('Email or password Incorrect', 'danger')
@@ -603,14 +603,12 @@ def login_submit():
 
 @app.route('/signup')
 def signup():
-  msg = ""
-  return render_template('signup.html', msg=msg)
+    msg = ""
+    return render_template('signup.html', msg=msg)
 
 
 @app.route('/signup', methods=['POST'])
 def signup_submit():
-    cnx = mysql.connector.connect(**config)
-    mycursor = cnx.cursor(buffered=True)
     msg = ""
     if request.method == 'POST' and 'first_name' in request.form and 'last_name' in request.form and 'password' in request.form and 'email' in request.form:
         first_name = request.form['first_name']
@@ -624,35 +622,38 @@ def signup_submit():
         password_pattern = r'^(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&+=!]).{8,}$'
 
         if password == re_password:
-           mycursor.execute("SELECT * FROM users WHERE email = '%s'" % (email))
-           account = mycursor.fetchone()
-           if account:
-               flash('Email already exists !', 'danger')
-           elif not re.match(r'[^@]+@[^@]+\.[^@]+', email):
-               flash('Invalid Email Address', 'danger')
-           elif not re.match(r'[A-Za-z0-9]+', first_name):
-               flash('First Name must contain only characters and numbers !', 'danger')
-           elif not re.match(password_pattern, password):
-               flash('Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one special character (@, #, $, %, ^, &, +, =, !).', 'danger')
-           elif not first_name or not password or not email:
-               flash('Please Fill out the form', 'danger')
-           else:
-              mycursor.execute("insert into users ( first_name, last_name, email, password, user_role, phone) values('" + str(
-                  first_name) + "', '" + str(last_name) + "', '" + str(email) + "', '" + str(password) + "', '" + str(user_role) + "', '" + str(phone) + "')")
-              cnx.commit()
+            mycursor.execute("SELECT * FROM users WHERE email = '%s'" % (email))
+            account = mycursor.fetchone()
+            if account:
+                flash('Email already exists !', 'danger')
+            elif not re.match(r'[^@]+@[^@]+\.[^@]+', email):
+                flash('Invalid Email Address', 'danger')
+            elif not re.match(r'[A-Za-z0-9]+', first_name):
+                flash('First Name must contain only characters and numbers !', 'danger')
+            elif not re.match(password_pattern, password):
+                flash(
+                    'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one special character (@, #, $, %, ^, &, +, =, !).',
+                    'danger')
+            elif not first_name or not password or not email:
+                flash('Please Fill out the form', 'danger')
+            else:
+                mycursor.execute(
+                    "insert into users ( first_name, last_name, email, password, user_role, phone) values('" + str(
+                        first_name) + "', '" + str(last_name) + "', '" + str(email) + "', '" + str(
+                        password) + "', '" + str(user_role) + "', '" + str(phone) + "')")
+                cnx.commit()
 
-              flash('You have successfully registered', 'success')
-              return add_login_view()
+                flash('You have successfully registered', 'success')
+                return add_login_view()
         else:
             flash('Your password and re-entered password is not matching.', 'danger')
     elif request.method == 'POST':
         flash('Please fill out the form', 'danger')
     return render_template('signup.html', msg=msg)
 
+
 @app.route('/updateownprofile')
 def updateownprofile():
-    cnx = mysql.connector.connect(**config)
-    mycursor = cnx.cursor()
     # Check if user is loggedin
     if 'loggedin' in session:
         # We need all the account info for the user so we can display it on the profile page
@@ -664,15 +665,13 @@ def updateownprofile():
         return redirect(url_for('login'))
 
 
-
-#app.config["IMAGE_UPLOADS"] = "C:/Users/raja/PycharmProjects/FlaskOpencv_FaceRecognition/static/user_photo/"
+# app.config["IMAGE_UPLOADS"] = "C:/Users/raja/PycharmProjects/FlaskOpencv_FaceRecognition/static/user_photo/"
 app.config["IMAGE_UPLOADS"] = "static/user_photo"
 
 
 @app.route('/updateownprofile', methods=['GET', 'POST'])
 def updateownprofile_submit():
     if request.method == "POST":
-        # Retrieve form data
         first_name = request.form['first_name']
         last_name = request.form['last_name']
         email = request.form['email']
@@ -681,43 +680,31 @@ def updateownprofile_submit():
         i_d = request.form['i_d']
         userlist_id = session['user_id']
         photo = request.form['photo']
-
-        # Handle file upload
         if request.files:
             image = request.files["fileToUpload"]
-            if image.filename != '' and image.filename is not None:
+            if image.filename != '' and image.filename != None:
                 image.filename = first_name + "-" + image.filename
                 image.save(os.path.join(app.config["IMAGE_UPLOADS"], image.filename))
                 photo = image.filename
                 session['user_photo'] = photo
+            # return render_template("updateownprofile.html", uploaded_image=image.filename)
+            # return updateownprofile()
+        else:
+            photo = request.form['photo']
 
-        # Check if dob is not empty before trying to convert it
-        if dob:
-            try:
-                # Convert the string to a datetime object
-                dob_datetime = datetime.strptime(dob, "%Y-%m-%d")
+        query = (
+            "UPDATE users SET "
+            "first_name=%s, last_name=%s, email=%s, phone=%s, photo=%s, dob=%s, i_d=%s "
+            "WHERE id=%s"
+        )
 
-                # Convert the datetime object back to a string in the desired format
-                formatted_dob = dob_datetime.strftime("%Y-%m-%d")
-            except ValueError:
-                # Handle the case where the date is not in the expected format
-                # You might want to add validation or notify the user about the incorrect date format
-                return render_template('your_error_template.html', error_message='Invalid date format')
+        values = (first_name, last_name, email, phone, photo, dob, i_d, userlist_id)
 
-            # Continue with the database update using 'formatted_dob' for the date field
-            query = (
-                "UPDATE users SET "
-                "first_name=%s, last_name=%s, email=%s, phone=%s, photo=%s, dob=%s, i_d=%s "
-                "WHERE id=%s"
-            )
-            values = (first_name, last_name, email, phone, photo, formatted_dob, i_d, userlist_id)
-            mycursor.execute(query, values)
-            cnx.commit()
+        mycursor.execute(query, values)
+        cnx.commit()
 
-        # Handle other cases as needed
-
-    # Redirect to the updateownprofile endpoint to display the updated profile
-    return redirect(url_for('updateownprofile'))
+    # return render_template("updateownprofile.html")
+    return updateownprofile()
 
 
 @app.route('/userlist')
@@ -725,18 +712,18 @@ def userlist():
     cnx = mysql.connector.connect(**config)
     mycursor = cnx.cursor()
     data1 = ""
-    #mycursor.execute("select * from users where user_role!='teacher'")
-    mycursor.execute("SELECT DISTINCT(b.img_person), a.* FROM users a LEFT JOIN img_dataset b ON a.id = b.img_person WHERE user_role NOT IN ('teacher', 'admin')")
+    # mycursor.execute("select * from users where user_role!='teacher'")
+    mycursor.execute(
+        "SELECT DISTINCT(b.img_person), a.* FROM users a LEFT JOIN img_dataset b ON a.id = b.img_person WHERE user_role NOT IN ('teacher', 'admin')")
     data = mycursor.fetchall()
     creater_id = session['user_id']
     mycursor.execute("select * from tbl_groups WHERE creater_id='" + str(creater_id) + "'")
     data1 = mycursor.fetchall()
     mycursor.execute("select * from join_groups")
     data2 = mycursor.fetchall()
-    #return jsonify(response=data)
-    #return render_template('userlist.html')
+    # return jsonify(response=data)
+    # return render_template('userlist.html')
     return render_template('userlist.html', data=data, data1=data1, data2=data2)
-
 
 
 @app.route('/user_functions', methods=['GET', 'POST'])
@@ -746,38 +733,39 @@ def user_functions():
     if action == 'approved':
         mycursor.execute("UPDATE users SET approved='1' WHERE id='" + str(userlistid) + "'")
         cnx.commit()
-    #return userlist()
+    # return userlist()
     return redirect(url_for('userlist'))
-
 
 
 @app.route('/group_functions', methods=['GET', 'POST'])
 def group_functions():
-    cnx = mysql.connector.connect(**config)
-    mycursor = cnx.cursor(buffered=True)
     userlistid = request.args.get('userlistid')
     group_id = request.args.get('group_id')
     action = request.args.get('action')
     if action == 'invite':
-        mycursor.execute("SELECT * FROM join_groups WHERE group_id='" + str(group_id) + "' AND user_id='" + str(userlistid) + "'")
+        mycursor.execute(
+            "SELECT * FROM join_groups WHERE group_id='" + str(group_id) + "' AND user_id='" + str(userlistid) + "'")
         account = mycursor.fetchone()
         if account:
-            msg=""
+            msg = ""
         else:
-            mycursor.execute("INSERT INTO join_groups ( group_id, user_id) VALUES ('" + str(group_id) + "','" + str(userlistid) + "')")
+            mycursor.execute("INSERT INTO join_groups ( group_id, user_id) VALUES ('" + str(group_id) + "','" + str(
+                userlistid) + "')")
             cnx.commit()
         return redirect(url_for('userlist'))
 
     if action == 'approved':
-        mycursor.execute("UPDATE join_groups SET user_approved='1' WHERE group_id='" + str(group_id) + "' AND user_id='" + str(userlistid) + "'")
+        mycursor.execute(
+            "UPDATE join_groups SET user_approved='1' WHERE group_id='" + str(group_id) + "' AND user_id='" + str(
+                userlistid) + "'")
         cnx.commit()
-        #return userlist()
+        # return userlist()
         return redirect(url_for('grouplist'))
 
     if request.method == "POST":
         group_id = request.form['select_group']
         print(group_id)
-        #print(request.form.getlist('userlist[]'))
+        # print(request.form.getlist('userlist[]'))
         for userlistid in request.form.getlist('userlist[]'):
             mycursor.execute("SELECT * FROM join_groups WHERE group_id='" + str(group_id) + "' AND user_id='" + str(
                 userlistid) + "'")
@@ -790,14 +778,14 @@ def group_functions():
                 cnx.commit()
             print(userlistid)
 
-        #return render_template('userlist.html', msg=userlist)
+        # return render_template('userlist.html', msg=userlist)
         return redirect(url_for('userlist'))
 
 
 @app.route('/grouprequest', methods=['GET', 'POST'])
 def grouprequest():
     if 'loggedin' in session:
-        m=""
+        m = ""
     else:
         return redirect(url_for('login'))
 
@@ -815,11 +803,12 @@ def grouprequest():
         account = mycursor.fetchone()
         if account:
             mycursor.execute(
-                "SELECT * FROM join_groups WHERE user_approved = 0 AND group_id='" + str(group_id) + "' AND user_id='" + str(
+                "SELECT * FROM join_groups WHERE user_approved = 0 AND group_id='" + str(
+                    group_id) + "' AND user_id='" + str(
                     userlistid) + "'")
             accounts = mycursor.fetchone()
             if accounts:
-                #return render_template("grouprequest.html", group_id=group_id,groupteacher=groupteacher,groupname=groupname)
+                # return render_template("grouprequest.html", group_id=group_id,groupteacher=groupteacher,groupname=groupname)
                 msg = "Please accept the request."
             else:
                 msg = "You already a member of this group."
@@ -829,7 +818,7 @@ def grouprequest():
                 userlistid) + "')")
             cnx.commit()
             msg = "inserted"
-        #return render_template("grouprequest.html", group_id=group_id,groupteacher=groupteacher,groupname=groupname)
+        # return render_template("grouprequest.html", group_id=group_id,groupteacher=groupteacher,groupname=groupname)
 
     if request.method == "POST" and 'accept' in request.form:
         joinrequest = request.form['accept']
@@ -851,7 +840,8 @@ def grouprequest():
     if msg == "yes":
         return redirect(url_for('updateownprofile'))
 
-    return render_template('grouprequest.html', msg=msg, group_id=group_id,groupteacher=groupteacher,groupname=groupname)
+    return render_template('grouprequest.html', msg=msg, group_id=group_id, groupteacher=groupteacher,
+                           groupname=groupname)
 
 
 @app.route('/logout')
@@ -859,8 +849,9 @@ def logout():
     session.pop('loggedin', None)
     session.pop('user_id', None)
     session.pop('username', None)
-    #return redirect(url_for('login'))
+    # return redirect(url_for('login'))
     return login_submit()
+
 
 @app.route('/groups', methods=['GET', 'POST'])
 def groups():
@@ -879,14 +870,18 @@ def groups():
             # Handle the form submission for creating a new channel
             group_name = request.form.get('group_name')
             if group_name:
-                mycursor.execute("INSERT INTO tbl_groups (group_name, creater_id) VALUES (%s, %s)", (group_name, creater_id))
+                mycursor.execute("INSERT INTO tbl_groups (group_name, creater_id) VALUES (%s, %s)",
+                                 (group_name, creater_id))
                 cnx.commit()
 
     # Fetch the updated data from the database
-    mycursor.execute("SELECT id, group_name, date_format(created, '%d-%m-%Y %W %H:%i:%s') FROM tbl_groups WHERE creater_id='" + str(creater_id) + "'")
+    mycursor.execute(
+        "SELECT id, group_name, date_format(created, '%d-%m-%Y %W %H:%i:%s') FROM tbl_groups WHERE creater_id='" + str(
+            creater_id) + "'")
     data = mycursor.fetchall()
 
     return render_template('groups.html', data=data)
+
 
 @app.route('/delete', methods=['GET', 'POST'])
 def delete():
@@ -897,16 +892,20 @@ def delete():
     cnx.commit()
     return redirect(url_for(rurl))
 
+
 @app.route('/grouplist', methods=['GET', 'POST'])
 def grouplist():
     user_id = session['user_id']
     action = request.args.get('action')
     group_id = request.args.get('group_id')
     if action == 'remove':
-        mycursor.execute("DELETE FROM join_groups WHERE group_id='" + str(group_id) + "' AND user_id='" + str(user_id) + "'")
+        mycursor.execute(
+            "DELETE FROM join_groups WHERE group_id='" + str(group_id) + "' AND user_id='" + str(user_id) + "'")
         cnx.commit()
 
-    mycursor.execute("SELECT join_groups.group_id,tbl_groups.group_name,join_groups.user_approved,users.first_name,users.last_name FROM join_groups left JOIN tbl_groups ON join_groups.group_id=tbl_groups.id left JOIN users ON tbl_groups.creater_id=users.id WHERE user_id='" + str(
+    # mycursor.execute("SELECT join_groups.group_id,groups.group_name,join_groups.user_approved FROM join_groups left JOIN groups ON join_groups.group_id=groups.id WHERE user_id='" + str(user_id) + "'")
+    mycursor.execute(
+        "SELECT join_groups.group_id,tbl_groups.group_name,join_groups.user_approved,users.first_name,users.last_name FROM join_groups left JOIN tbl_groups ON join_groups.group_id=tbl_groups.id left JOIN users ON tbl_groups.creater_id=users.id WHERE user_id='" + str(
             user_id) + "'")
     data = mycursor.fetchall()
 
@@ -916,20 +915,21 @@ def grouplist():
     action = request.args.get('action')
     data1 = ""
     if action == 'view_members':
+        # mycursor.execute(
+        #  "SELECT users.first_name,users.last_name,users.user_role FROM `join_groups` left JOIN groups ON join_groups.group_id=groups.id left JOIN users ON join_groups.user_id=users.id WHERE join_groups.user_approved='1' AND join_groups.group_id='" + str(
+        #     group_id) + "'")
         mycursor.execute(
-            "SELECT users.first_name, users.last_name, users.user_role "
-            "FROM join_groups "
-            "LEFT JOIN tbl_groups ON join_groups.group_id = tbl_groups.id "
-            "LEFT JOIN users ON join_groups.user_id = users.id "
-            "WHERE join_groups.group_id='" + str(group_id) + "'"
-        )
+            "SELECT users.first_name,users.last_name,users.user_role FROM `join_groups` left JOIN tbl_groups ON join_groups.group_id=tbl_groups.id left JOIN users ON join_groups.user_id=users.id WHERE join_groups.group_id='" + str(
+                group_id) + "'")
         data1 = mycursor.fetchall()
     return render_template('grouplist.html', data=data, data1=data1, groupteacher=groupteacher, groupname=groupname)
 
+
 @app.route('/teachersignup')
 def teachersignup():
-  msg = ""
-  return render_template('teachersignup.html', msg=msg)
+    msg = ""
+    return render_template('teachersignup.html', msg=msg)
+
 
 @app.route('/teachersignup', methods=['POST'])
 def teachersignup_submit():
@@ -944,26 +944,27 @@ def teachersignup_submit():
         phone = ""
         password_pattern = r'^(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&+=!]).{8,}$'
 
-
         if password == re_password:
-           mycursor.execute("SELECT * FROM users WHERE email = '%s'" % (email))
-           account = mycursor.fetchone()
-           if account:
-               flash('Email already exists !', 'danger')
-           elif not re.match(r'[^@]+@[^@]+\.[^@]+', email):
-               flash('Invalid email address !', 'danger')
-           elif not re.match(r'[A-Za-z0-9]+', first_name):
-               flash('First Name must contain only characters and numbers !', 'danger')
-           elif not re.match(password_pattern, password):
-               flash('Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one special character (@, #, $, %, ^, &, +, =, !).', 'danger')
-           elif not first_name or not password or not email:
-               flash('Please fill out the form !', 'danger')
-           else:
-              mycursor.execute("insert into users ( first_name, last_name, email, password, user_role, phone) values('" + str(
-                  first_name) + "', '" + str(last_name) + "', '" + str(email) + "', '" + str(password) + "', '" + str(user_role) + "', '" + str(phone) + "')")
-              cnx.commit()
-              flash('You have successfully registered !', 'success')
-              return add_login_view()
+            mycursor.execute("SELECT * FROM users WHERE email = '%s'" % (email))
+            account = mycursor.fetchone()
+            if account:
+                flash('Email already exists !', 'danger')
+            elif not re.match(r'[^@]+@[^@]+\.[^@]+', email):
+                flash('Invalid email address !', 'danger')
+            elif not re.match(r'[A-Za-z0-9]+', first_name):
+                flash('First Name must contain only characters and numbers !', 'danger')
+            elif not re.match(password_pattern, password):
+                flash('Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one special character (@, #, $, %, ^, &, +, =, !).','danger')
+            elif not first_name or not password or not email:
+                flash('Please fill out the form !', 'danger')
+            else:
+                mycursor.execute(
+                    "insert into users ( first_name, last_name, email, password, user_role, phone) values('" + str(
+                        first_name) + "', '" + str(last_name) + "', '" + str(email) + "', '" + str(
+                        password) + "', '" + str(user_role) + "', '" + str(phone) + "')")
+                cnx.commit()
+                flash('You have successfully registered !', 'success')
+                return add_login_view()
         else:
             flash('Your password and re-entered password is not matching.', 'danger')
     elif request.method == 'POST':
@@ -980,7 +981,7 @@ def report():
         startdate = request.form['startdate']
         enddate = request.form['enddate']
         if request.form['startdate'] != "" and request.form['enddate'] != "":
-           filters = " and a.accs_date BETWEEN '" + str(startdate) + "' AND '" + str(enddate) + "'"
+            filters = " and a.accs_date BETWEEN '" + str(startdate) + "' AND '" + str(enddate) + "'"
 
     if request.method == 'POST' and 'filter' in request.form and 'group' in request.form:
         if request.form['group'] != "":
@@ -1009,9 +1010,9 @@ def report():
     data = mycursor.fetchall()
     return render_template('report.html', data=data)
 
+
 @app.route('/agrouplist', methods=['GET', 'POST'])
 def agrouplist():
-
     group_id = request.args.get('group_id')
     groupteacher = request.args.get('groupteacher')
     groupname = request.args.get('groupname')
@@ -1027,7 +1028,8 @@ def agrouplist():
 
     if action == 'remove':
         userlist_id = request.args.get('userlist_id')
-        mycursor.execute("DELETE FROM join_groups WHERE group_id='" + str(group_id) + "' AND user_id='" + str(userlist_id) + "'")
+        mycursor.execute(
+            "DELETE FROM join_groups WHERE group_id='" + str(group_id) + "' AND user_id='" + str(userlist_id) + "'")
         cnx.commit()
 
     if action == 'invite':
@@ -1046,13 +1048,12 @@ def agrouplist():
         group_id = session['group_id']
         groupteacher = session['groupteacher']
         groupname = session['groupname']
+        # mycursor.execute(
+        #   "SELECT users.first_name,users.last_name,users.user_role,users.id,users.photo FROM `join_groups` left JOIN groups ON join_groups.group_id=groups.id left JOIN users ON join_groups.user_id=users.id WHERE join_groups.user_approved='1' AND join_groups.group_id='" + str(
+        #     group_id) + "'")
         mycursor.execute(
-            "SELECT users.first_name, users.last_name, users.user_role, users.id, users.photo "
-            "FROM join_groups "
-            "LEFT JOIN tbl_groups ON join_groups.group_id = tbl_groups.id "
-            "LEFT JOIN users ON join_groups.user_id = users.id "
-            "WHERE join_groups.group_id='" + str(group_id) + "'"
-        )
+            "SELECT users.first_name,users.last_name,users.user_role,users.id,users.photo FROM `join_groups` left JOIN tbl_groups ON join_groups.group_id=tbl_groups.id left JOIN users ON join_groups.user_id=users.id WHERE join_groups.group_id='" + str(
+                group_id) + "'")
         data1 = mycursor.fetchall()
         mycursor.execute("select * from users where user_role!='teacher'")
         data2 = mycursor.fetchall()
@@ -1065,12 +1066,13 @@ def agrouplist():
             "  left join users b on a.accs_prsn = b.id "
             " where b.id = " + str(userlist_id) +
             " and a.group_id = '" + str(group_id) + "'"
-            " order by a.accs_id desc")
+                                                    " order by a.accs_id desc")
         data = mycursor.fetchall()
 
     user_id = session['user_id']
     mycursor.execute(
-        "select * from random_attendance where DATE(created)=CURDATE() AND TIME_FORMAT(random_time, '%H:%i')>=TIME_FORMAT(CURRENT_TIME(), '%H:%i') AND group_id='" + str(group_id) + "' AND user_id='" + str(user_id) + "'")
+        "select * from random_attendance where DATE(created)=CURDATE() AND TIME_FORMAT(random_time, '%H:%i')>=TIME_FORMAT(CURRENT_TIME(), '%H:%i') AND group_id='" + str(
+            group_id) + "' AND user_id='" + str(user_id) + "'")
     data3 = mycursor.fetchall()
 
     mycursor.execute(
@@ -1078,56 +1080,59 @@ def agrouplist():
             group_id) + "' AND user_id='" + str(user_id) + "'")
     data4 = mycursor.fetchall()
 
-    return render_template('agrouplist.html', data=data, data1=data1, groupteacher=groupteacher, groupname=groupname, group_id=group_id, data2=data2, data3=data3, data4=data4)
+    return render_template('agrouplist.html', data=data, data1=data1, groupteacher=groupteacher, groupname=groupname,
+                           group_id=group_id, data2=data2, data3=data3, data4=data4)
+
 
 @app.route('/loadattendanceData', methods=['GET', 'POST'])
 def loadattendanceData():
+    group_id = session['group_id']
+    mycursor.execute(
+        "select COUNT(a.accs_prsn) as v, b.first_name, b.last_name,a.accs_prsn from accs_hist a left join users b on a.accs_prsn = b.id where a.group_id = '" + str(
+            group_id) + "' GROUP BY a.accs_prsn")
+    data = mycursor.fetchall()
 
-  group_id = session['group_id']
-  mycursor.execute(
-            "select COUNT(a.accs_prsn) as v, b.first_name, b.last_name,a.accs_prsn from accs_hist a left join users b on a.accs_prsn = b.id where a.group_id = '" + str(group_id) + "' GROUP BY a.accs_prsn")
-  data = mycursor.fetchall()
+    return jsonify(response=data)
 
-  return jsonify(response=data)
 
 @app.route('/loadattendanceDatareport', methods=['GET', 'POST'])
 def loadattendanceDatareport():
-  user_id = session['user_id']
-  user_role = session['user_role']
-  #group_id = session['group_id']
-  if user_role != 'teacher':
-      mycursor.execute(
-          "select COUNT(a.accs_prsn) as v, c.group_name, b.first_name, b.last_name,a.accs_prsn,a.group_id from accs_hist a left join users b on a.accs_prsn = b.id left join tbl_groups c on a.group_id=c.id WHERE a.accs_prsn='" + str(user_id) + "' GROUP BY a.group_id")
-  else:
-      mycursor.execute(
+    user_id = session['user_id']
+    user_role = session['user_role']
+    # group_id = session['group_id']
+    if user_role != 'teacher':
+        mycursor.execute(
+            "select COUNT(a.accs_prsn) as v, c.group_name, b.first_name, b.last_name,a.accs_prsn,a.group_id from accs_hist a left join users b on a.accs_prsn = b.id left join groups c on a.group_id=c.id WHERE a.accs_prsn='" + str(
+                user_id) + "' GROUP BY a.group_id")
+    else:
+        mycursor.execute(
             "select COUNT(a.accs_prsn) as v, b.first_name, b.last_name,a.accs_prsn from accs_hist a left join users b on a.accs_prsn = b.id GROUP BY a.accs_prsn")
 
-  data = mycursor.fetchall()
+    data = mycursor.fetchall()
 
-  return jsonify(response=data)
-
+    return jsonify(response=data)
 
 
 @app.route('/setrandomattendance', methods=['GET', 'POST'])
 def setrandomattendance():
-   if request.method == "POST":
-       group_id = request.form['group_id']
-       duration = request.form['duration']
-       user_id = session['user_id']
-       status = "active"
-       #random_time = str(request.form.getlist['random_time[]'])
-       for random_time in request.form.getlist('random_time[]'):
-           print(random_time)
-           mycursor.execute(
-               "INSERT INTO random_attendance ( user_id, group_id, random_time, duration, status) VALUES ('" + str(
-                   user_id) + "','" + str(
-                   group_id) + "','" + str(random_time) + "','" + str(duration) + "','" + str(status) + "')")
-           cnx.commit()
-       print(random_time)
+    if request.method == "POST":
+        group_id = request.form['group_id']
+        duration = request.form['duration']
+        user_id = session['user_id']
+        status = "active"
+        # random_time = str(request.form.getlist['random_time[]'])
+        for random_time in request.form.getlist('random_time[]'):
+            print(random_time)
+            mycursor.execute(
+                "INSERT INTO random_attendance ( user_id, group_id, random_time, duration, status) VALUES ('" + str(
+                    user_id) + "','" + str(
+                    group_id) + "','" + str(random_time) + "','" + str(duration) + "','" + str(status) + "')")
+            cnx.commit()
+        print(random_time)
 
-   data = ""
-   #return jsonify(response=data)
-   return redirect(url_for('agrouplist'))
+    data = ""
+    # return jsonify(response=data)
+    return redirect(url_for('agrouplist'))
 
 
 @app.route('/countTodayAttenScan', methods=['GET', 'POST'])
@@ -1172,7 +1177,6 @@ def users():
     return render_template('users.html', users=users)
 
 
-
 @app.route('/add_user', methods=['POST'])
 def add_user():
     # Add a new user to the database
@@ -1193,7 +1197,9 @@ def add_user():
         elif not first_name or not last_name or not email or not user_role:
             flash('All fields are required.', 'danger')
         elif not re.match(password_pattern, password):
-            flash('Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one special character (@, #, $, %, ^, &, +, =, !).', 'danger')
+            flash(
+                'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one special character (@, #, $, %, ^, &, +, =, !).',
+                'danger')
         else:
             mycursor.execute(
                 "INSERT INTO users (first_name, last_name, email, user_role, password) VALUES (%s, %s, %s, %s, %s)",
@@ -1247,6 +1253,7 @@ def edit_user(user_id):
 
     return render_template('edit_user.html', user=user)
 
+
 @app.route('/delete_user/<int:user_id>', methods=['POST'])
 def delete_user(user_id):
     # Delete a user from the database
@@ -1260,12 +1267,13 @@ def delete_user(user_id):
 def updateprofile():
     userlist_id = ""
     if request.args.get('id') != "" and request.args.get('id') != None:
-      session['userlist_id'] = request.args.get('id')
+        session['userlist_id'] = request.args.get('id')
     userlist_id = session['userlist_id']
     mycursor.execute("SELECT * FROM users WHERE user_role!='teacher' AND id='" + str(userlist_id) + "'")
     account = mycursor.fetchone()
     # Show the profile page with account info
     return render_template('updateprofile.html', account=account)
+
 
 @app.route('/updateprofile', methods=['POST'])
 def updateprofile_submit():
@@ -1289,18 +1297,23 @@ def updateprofile_submit():
         else:
             photo = request.form['photo']
 
-        mycursor.execute("UPDATE users SET first_name='" + str(first_name) + "',last_name='" + str(last_name) + "',email='" + str(email) + "',phone='" + str(phone) + "', photo='" + str(photo) + "', dob='" + str(dob) + "', i_d='" + str(i_d) + "' WHERE id='" + str(userlist_id) + "'")
+        mycursor.execute(
+            "UPDATE users SET first_name='" + str(first_name) + "',last_name='" + str(last_name) + "',email='" + str(
+                email) + "',phone='" + str(phone) + "', photo='" + str(photo) + "', dob='" + str(dob) + "', i_d='" + str(
+                i_d) + "' WHERE id='" + str(userlist_id) + "'")
         cnx.commit()
 
-    #return render_template("updateprofile.html")
+    # return render_template("updateprofile.html")
     return updateprofile()
+
 
 #####################################################
 @app.route("/meeting")
 def meeting():
     return render_template("meeting.html")
 
-@app.route("/join", methods=[ "GET" , "POST"])
+
+@app.route("/join", methods=["GET", "POST"])
 def join():
     if request.method == "POST":
         room_id = request.form.get("roomID")
@@ -1322,4 +1335,3 @@ def join():
 
 if __name__ == "__main__":
     app.run()
-    
