@@ -95,8 +95,8 @@ def generate_dataset(nbr, received_img):
                 cv2.putText(face, "Click Train Face.", (5, 45), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
                 break
 
-                cap.release()
-                cv2.destroyAllWindows()
+    # Make sure to release resources after the loop
+    cv2.destroyAllWindows()
 
 
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Train Classifier >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
