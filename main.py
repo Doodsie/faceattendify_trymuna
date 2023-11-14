@@ -467,6 +467,7 @@ def vfdataset_page():
 
 @app.route('/vidfeed_dataset/<nbr>')
 def vidfeed_dataset(nbr):
+    received_img = request.get_data()
     # Video streaming route. Put this in the src attribute of an img tag
     return Response(generate_dataset(nbr, received_img), mimetype='multipart/x-mixed-replace; boundary=frame')
 
