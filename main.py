@@ -14,6 +14,7 @@ import base64
 
 
 app = Flask(__name__)
+socketio = SocketIO(app)
 app.secret_key = 'pisatindipay'
 cnt = 0
 pause_cnt = 0
