@@ -34,6 +34,14 @@ mycursor = cnx.cursor(buffered=True)
     
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Generate dataset >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+
+def process_received_img(received_img):
+    # Decode Base64 string to image
+    _, img_encoded = received_img.split(',', 1)
+    img_decoded = np.frombuffer(base64.b64decode(img_encoded), dtype=np.uint8)
+    img = cv2.imdecode(img_decoded, cv2.IMREAD_COLOR)
+    return img
+
 def generate_dataset(nbr, received_img):
     face_classifier = cv2.CascadeClassifier("resources/haarcascade_frontalface_default.xml")
 
@@ -63,7 +71,7 @@ def generate_dataset(nbr, received_img):
     count_img = 0
 
     # Use the received image instead of capturing from cv2.VideoCapture(0)
-    img = received_img
+    img = process_received_img(received_img)
 
     # Load the pre-trained LBPH face recognizer
     clf = cv2.face.LBPHFaceRecognizer_create()
