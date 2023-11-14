@@ -1,6 +1,5 @@
 import json
 from flask import Flask, render_template, request, session, redirect, url_for, Response, jsonify, flash
-from flask_socketio import SocketIO, emit
 import mysql.connector
 import cv2
 from PIL import Image
@@ -9,13 +8,10 @@ import os
 import time
 from datetime import date, datetime
 import re
-import base64
-
 
 
 
 app = Flask(__name__)
-socketio = SocketIO(app)
 app.secret_key = 'pisatindipay'
 cnt = 0
 pause_cnt = 0
@@ -422,22 +418,6 @@ def cnt_reset():
 @app.route('/vfdataset_page')
 def vfdataset_page():
     return render_template('gendataset.html', prs=session['user_id'])
-
-@socketio.on('connect')
-def handle_connect():
-    print('Client connected')
-    cap = cv2.VideoCapture(0)
-
-    while True:
-        ret, frame = cap.read()
-        _, buffer = cv2.imencode('.jpg', frame)
-        data = base64.b64encode(buffer).decode('utf-8')
-        socketio.emit('video_frame', data)
-
-@socketio.on('disconnect')
-def handle_disconnect():
-    print('Client disconnected')
-    cap.release()
 
 
 @app.route('/vidfeed_dataset/<nbr>')
@@ -1351,5 +1331,4 @@ def join():
 
 
 if __name__ == "__main__":
-    socketio.run(app, debug=True)
     app.run()
