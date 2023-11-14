@@ -32,6 +32,7 @@ mycursor = cnx.cursor(buffered=True)
 
     
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Generate dataset >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
 def generate_dataset(nbr, received_img):
     face_classifier = cv2.CascadeClassifier("resources/haarcascade_frontalface_default.xml")
 
@@ -63,16 +64,19 @@ def generate_dataset(nbr, received_img):
     # Use the received image instead of capturing from cv2.VideoCapture(0)
     img = received_img
 
+    # Load the pre-trained LBPH face recognizer
+    clf = cv2.face.LBPHFaceRecognizer_create()
+    clf.read("classifier.xml")  # Make sure to train and save the classifier beforehand
+
     while True:
-        if face_cropped(img) is None:
-            frame1 = cv2.resize(img, (200, 200))
-            frame1 = cv2.imencode('.jpg', frame1)[1].tobytes()
-            yield (b'--frame1\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame1 + b'\r\n')
         if face_cropped(img) is not None:
             count_img += 1
             img_id += 1
             face = cv2.resize(face_cropped(img), (200, 200))
             face = cv2.cvtColor(face, cv2.COLOR_BGR2GRAY)
+
+            # Recognize the face using the trained classifier
+            label, confidence = clf.predict(face)
 
             file_name_path = "dataset/" + nbr + "." + str(img_id) + ".jpg"
             cv2.imwrite(file_name_path, face)
@@ -81,16 +85,13 @@ def generate_dataset(nbr, received_img):
             mycursor.execute("""INSERT INTO `img_dataset` (`img_id`, `img_person`) VALUES
                                 ('{}', '{}')""".format(img_id, nbr))
             cnx.commit()
-            if int(img_id) == int(max_imgid):
-                cv2.putText(face, "Training Complete", (5, 30), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
-                cv2.putText(face, "Click Train Face.", (5, 45), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
+
             frame = cv2.imencode('.jpg', face)[1].tobytes()
             yield (b'--frame1\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
-            # Optionally, you can add a delay here if needed.
-            # time.sleep(0.1)
-
             if int(img_id) == int(max_imgid):
+                cv2.putText(face, "Training Complete", (5, 30), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
+                cv2.putText(face, "Click Train Face.", (5, 45), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
                 break
 
                 cap.release()
