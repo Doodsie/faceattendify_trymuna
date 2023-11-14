@@ -58,7 +58,7 @@
         <div class="col-md-3-lg-2 mx-auto text-center">
             <!--h3>Generate Dataset {{ prs }}</h3-->
             <h3><b>Generate Face</b></h3>
-            <video id="video" width="640" height="480" autoplay></video>
+            <video id="addfaceimg" width="640" height="480" autoplay></video>
             <hr>
             <!--img src="{{ url_for('vidfeed_dataset', nbr=prs) }}" width="100%" height="100%" class="img-thumbnail1" id="addfaceimg"-->
             <img width="25%" height="25%" class="img-thumbnail1" id="addfaceimg">
@@ -90,7 +90,7 @@
 
 navigator.mediaDevices.getUserMedia({ video: true })
     .then(function (stream) {
-        var video = document.getElementById('video');
+        var video = document.getElementById('addfaceimg');
         video.srcObject = stream;
     })
     .catch(function (err) {
