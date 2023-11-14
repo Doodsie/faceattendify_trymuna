@@ -142,12 +142,24 @@ def train_classifier(nbr):
     return redirect('/vfdataset_page')
 
 
+
+@app.route('/process_frame', methods=['POST'])
+def process_frame():
+    # Handle the incoming frame data
+    frame_data = request.get_json()
+    # Perform face recognition or other processing on the frame_data
+
+    # Return a response if needed
+    return jsonify({'status': 'success'})
+
 def get_image_count(user_id):
     # Assuming you have a database table named img_dataset with user_id field
     mycursor.execute("SELECT COUNT(*) FROM img_dataset WHERE img_person = %s", (user_id,))
     row = mycursor.fetchone()
     count = row[0] if row else 0
     return count
+
+
 
 
 @app.route('/gendataset')
