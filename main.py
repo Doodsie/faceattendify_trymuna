@@ -155,12 +155,17 @@ def process_frame():
 
     # Perform face recognition or other processing on the img
 
-    # Use the received image in the generate_dataset function
-    nbr = "your_user_id"  # Replace with the actual user ID
-    generate_dataset(nbr, img)
+    # Assuming you have a way to associate user IDs with frames
+    user_id = frame_data.get('user_id', None)
 
-    # Return a response if needed
-    return jsonify({'status': 'success'})
+    if user_id is not None:
+        # Use the received image in the generate_dataset function
+        generate_dataset(user_id, img)
+
+        # Return a response if needed
+        return jsonify({'status': 'success'})
+    else:
+        return jsonify({'status': 'error', 'message': 'User ID not provided'})
 
 def get_image_count(user_id):
     # Assuming you have a database table named img_dataset with user_id field
