@@ -154,6 +154,10 @@ def process_frame():
 
     # Perform face recognition or other processing on the img
 
+    # Use the received image in the generate_dataset function
+    nbr = "your_user_id"  # Replace with the actual user ID
+    generate_dataset(nbr, img)
+
     # Return a response if needed
     return jsonify({'status': 'success'})
 
@@ -225,6 +229,24 @@ def face_show():
 
             coords = [x, y, w, h]
         return coords
+
+    # Flask server endpoint to send frames to
+    endpoint_url = "https://faceattendify.up.railway.app/process_frame"
+
+    while True:
+        ret, img = cap.read()
+        img = recognize(img, clf, faceCascade)
+
+        # Encode image to base64 and convert to data URL
+        _, img_encoded = cv2.imencode('.jpg', img)
+        data_url = "data:image/jpeg;base64," + base64.b64encode(img_encoded).decode('utf-8')
+
+        # Send the frame to the server
+        requests.post(endpoint_url, json={'frame': data_url})
+
+        key = cv2.waitKey(1)
+        if key == 27:
+            break
 
     def recognize(img, clf, faceCascade):
         coords = draw_boundary(img, faceCascade, 1.1, 10, (255, 255, 0), "Face", clf)
