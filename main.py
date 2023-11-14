@@ -60,9 +60,10 @@ def generate_dataset(nbr, received_img):
     max_imgid = 100
     count_img = 0
 
-    while True:
-        img = received_img  # Use the received image instead of capturing from cv2.VideoCapture(0)
+    # Use the received image instead of capturing from cv2.VideoCapture(0)
+    img = received_img
 
+    while True:
         if face_cropped(img) is None:
             frame1 = cv2.resize(img, (200, 200))
             frame1 = cv2.imencode('.jpg', frame1)[1].tobytes()
@@ -86,8 +87,12 @@ def generate_dataset(nbr, received_img):
             frame = cv2.imencode('.jpg', face)[1].tobytes()
             yield (b'--frame1\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
-            if cv2.waitKey(1) == 13 or int(img_id) == int(max_imgid):
+            # Optionally, you can add a delay here if needed.
+            # time.sleep(0.1)
+
+            if int(img_id) == int(max_imgid):
                 break
+
                 cap.release()
                 cv2.destroyAllWindows()
 
