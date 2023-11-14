@@ -1,5 +1,6 @@
 import json
 from flask import Flask, render_template, request, session, redirect, url_for, Response, jsonify, flash
+from flask_socketio import SocketIO, emit
 import mysql.connector
 import cv2
 from PIL import Image
