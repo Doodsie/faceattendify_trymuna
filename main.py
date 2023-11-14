@@ -31,14 +31,13 @@ mycursor = cnx.cursor(buffered=True)
 
     
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Generate dataset >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-def generate_dataset(nbr):
+def generate_dataset(nbr, received_img):
     face_classifier = cv2.CascadeClassifier("resources/haarcascade_frontalface_default.xml")
 
     mycursor.execute("select * from img_dataset WHERE img_person='" + str(nbr) + "'")
     data1 = mycursor.fetchall()
     for item in data1:
         imagePath = "dataset/" + nbr + "." + str(item[0]) + ".jpg"
-        # print(imagePath)
         try:
             os.remove(imagePath)
         except:
@@ -49,8 +48,6 @@ def generate_dataset(nbr):
     def face_cropped(img):
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         faces = face_classifier.detectMultiScale(gray, 1.3, 5)
-        # scaling factor=1.3
-        # Minimum neighbor = 5
 
         if len(faces) == 0:
             return None
@@ -58,24 +55,17 @@ def generate_dataset(nbr):
             cropped_face = img[y:y + h, x:x + w]
         return cropped_face
 
-    cap = cv2.VideoCapture(0)
-
-    mycursor.execute("select ifnull(max(img_id), 0) from img_dataset")
-    row = mycursor.fetchone()
-    lastid = row[0]
-
-    img_id = lastid
-    max_imgid = img_id + 100
+    img_id = 0
+    max_imgid = 100
     count_img = 0
 
     while True:
-        ret, img = cap.read()
+        img = received_img  # Use the received image instead of capturing from cv2.VideoCapture(0)
 
-        # Decode data URL and convert to OpenCV image
-        _, img_encoded = data_url.split(',', 1)
-        img_decoded = np.frombuffer(base64.b64decode(img_encoded), dtype=np.uint8)
-        img = cv2.imdecode(img_decoded, cv2.IMREAD_COLOR)
-
+        if face_cropped(img) is None:
+            frame1 = cv2.resize(img, (200, 200))
+            frame1 = cv2.imencode('.jpg', frame1)[1].tobytes()
+            yield (b'--frame1\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame1 + b'\r\n')
         if face_cropped(img) is not None:
             count_img += 1
             img_id += 1
@@ -89,11 +79,9 @@ def generate_dataset(nbr):
             mycursor.execute("""INSERT INTO `img_dataset` (`img_id`, `img_person`) VALUES
                                 ('{}', '{}')""".format(img_id, nbr))
             cnx.commit()
-
             if int(img_id) == int(max_imgid):
                 cv2.putText(face, "Training Complete", (5, 30), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
                 cv2.putText(face, "Click Train Face.", (5, 45), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
-
             frame = cv2.imencode('.jpg', face)[1].tobytes()
             yield (b'--frame1\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
