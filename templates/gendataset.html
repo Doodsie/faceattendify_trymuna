@@ -87,6 +87,11 @@
 {% include "footer.html" %}
 <script>
 
+    var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+    socket.on('video_frame', function (data) {
+        document.getElementById('video_feed').src = 'data:image/jpeg;base64,' + data;
+
 navigator.mediaDevices.getUserMedia({ video: true })
     .then(function (stream) {
         var video = document.getElementById('addfaceimg');

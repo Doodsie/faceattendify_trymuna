@@ -419,6 +419,22 @@ def cnt_reset():
 def vfdataset_page():
     return render_template('gendataset.html', prs=session['user_id'])
 
+@socketio.on('connect')
+def handle_connect():
+    print('Client connected')
+    cap = cv2.VideoCapture(0)
+
+    while True:
+        ret, frame = cap.read()
+        _, buffer = cv2.imencode('.jpg', frame)
+        data = base64.b64encode(buffer).decode('utf-8')
+        socketio.emit('video_frame', data)
+
+@socketio.on('disconnect')
+def handle_disconnect():
+    print('Client disconnected')
+    cap.release()
+
 
 @app.route('/vidfeed_dataset/<nbr>')
 def vidfeed_dataset(nbr):
