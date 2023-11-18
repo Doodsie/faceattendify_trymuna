@@ -18,11 +18,11 @@ pause_cnt = 0
 justscanned = False
 
 config = {
-    "host": "roundhouse.proxy.rlwy.net",
+    "host": "viaduct.proxy.rlwy.net",
     "user": "root",
-    "password": "f4C3ed4bcfAEfachEbC1dfDhBeFdfgA1",
-    "database": "zagusopass",
-    "port": "20449"
+    "password": "Ef6FBCb62BACHD4-c5dAE6cADF3gBb1A",
+    "database": "trylangpls",
+    "port": "13204"
 }
 
 cnx = mysql.connector.connect(**config)
