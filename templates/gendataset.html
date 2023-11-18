@@ -124,3 +124,33 @@ $('#header_page_title').html('Face Registration');
         window.location.href = "{{ url_for('train_classifier', nbr=prs) }}";
     });
 </script>
+
+    <script>
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then((stream) => {
+                const video = document.getElementById('video');
+                video.srcObject = stream;
+
+                // Facial recognition logic using the video stream
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+
+                video.addEventListener('loadeddata', () => {
+                    setInterval(() => {
+                        // Draw the current video frame onto the canvas
+                        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                        // Get the image data from the canvas
+                        const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+
+                        // Your facial recognition logic on the 'imageData'
+                        // This could involve sending the image data to a server for processing,
+                        // or using a client-side facial recognition library.
+
+                    }, 100); // Adjust the interval as needed
+                });
+            })
+            .catch((error) => {
+                console.error('Error accessing the camera:', error);
+            });
+    </script>
