@@ -55,7 +55,7 @@
         <div class="col-md-3-lg-2 mx-auto text-center">
             <h3><b>Generate Face</b></h3>
             <hr>
-            <img width="25%" height="25%" class="img-thumbnail1" id="addfaceimg">
+            <video id="video" width="640" height="480" autoplay></video>
             <h4>Please ensure that you are the only one in front of the camera.</h4>
             <h4>Please ensure that you train your face in good lighting conditions.</h4>
         </div>
@@ -133,3 +133,45 @@
     });
     </script>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // Connect to the Socket.IO server
+    var socket = io.connect('https://testattendify.up.railway.app/');
+
+    // Get the user's media (video)
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(function (stream) {
+        // Get the video element
+        var video = document.getElementById('video');
+
+        // Set the video stream as the source
+        video.srcObject = stream;
+
+        // Play the video
+        video.play();
+
+        // Capture and send frames to the server
+        var canvas = document.createElement('canvas');
+        var context = canvas.getContext('2d');
+
+        function captureFrame() {
+          context.drawImage(video, 0, 0, canvas.width, canvas.height);
+          var imageData = canvas.toDataURL('image/jpeg');
+          socket.emit('frame', { frame_data: imageData });
+        }
+
+        // Capture a frame every 100 milliseconds (adjust as needed)
+        setInterval(captureFrame, 100);
+      })
+      .catch(function (error) {
+        console.log('Error accessing user media: ', error);
+      });
+
+    // Handle the response from the server (optional)
+    socket.on('frame_response', function (data) {
+      // You can handle the response from the server if needed
+      console.log('Received frame response from server');
+    });
+  });
+</script>
