@@ -55,8 +55,11 @@ def generate_dataset(nbr, socketio):
             cropped_face = img[y:y + h, x:x + w]
         return cropped_face
 
+    count_img = 0  # Initialize count_img outside the handle_frame function
+
     @socketio.on('frame')
     def handle_frame(frame_data):
+        nonlocal count_img  # Use nonlocal to modify the outer count_img variable
         frame_bytes = base64.b64decode(frame_data.split(',')[1])
         nparr = np.frombuffer(frame_bytes, np.uint8)
         img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
