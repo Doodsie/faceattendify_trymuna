@@ -96,7 +96,7 @@ def train_classifier(nbr):
     if not has_completed_training(user_id):
         img_count = get_image_count(user_id)  # Get the image count for the user
 
-        if img_count == 100:
+        if img_count == 0:
 
             dataset_dir = "dataset"
 
