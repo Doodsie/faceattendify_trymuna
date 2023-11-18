@@ -20,9 +20,9 @@ justscanned = False
 config = {
     "host": "viaduct.proxy.rlwy.net",
     "user": "root",
-    "password": "Ef6FBCb62BACHD4-c5dAE6cADF3gBb1A",
-    "database": "trylangpls",
-    "port": "13204"
+    "password": "gHd613c3A1gAGcFefAaGCfFC-efaHBB1",
+    "database": "trylangplsuwu",
+    "port": "17914"
 }
 
 cnx = mysql.connector.connect(**config)
